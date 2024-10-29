@@ -109,8 +109,7 @@ class VllmGenerator(Generator):
                 completions = [completion.text for completion in output.outputs]
 
                 if not self.is_chat():
-                    # completions = [refine_text(prompt["prompt"] + "\n\n" + response_prefix + sample + response_suffix) for sample in completions]
-                    completions = [refine_text(response_prefix + sample + response_suffix) for sample in completions]
+                    completions = [refine_text(prompt["prompt"] + "\n\n" + response_prefix + sample + response_suffix) for sample in completions]
                 else:
                     completions = [refine_text(response_prefix + sample + response_suffix) for sample in completions]
 

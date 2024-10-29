@@ -403,16 +403,6 @@ def unsafe_execute(
 
 import psutil
 
-def terminate_process_tree_v1(pid):
-    try:
-        parent = psutil.Process(pid)
-        children = parent.children(recursive=True)
-        for child in children:
-            os.kill(child.pid, signal.SIGKILL)
-        os.kill(pid, signal.SIGKILL)
-    except psutil.NoSuchProcess:
-        pass
-
 def terminate_process_tree(pid):
     try:
         parent = psutil.Process(pid)
@@ -427,38 +417,6 @@ def terminate_process_tree(pid):
             os.kill(parent.pid, signal.SIGKILL)
     except psutil.NoSuchProcess:
         pass
-
-# def terminate_process_tree(pid, timeout=5):
-#     try:
-#         parent = psutil.Process(pid)
-#         children = parent.children(recursive=True)
-
-#         # First try to terminate child processes gently
-#         for child in children:
-#             try:
-#                 child.terminate()  # Send SIGTERM first
-#             except psutil.NoSuchProcess:
-#                 pass
-
-#         _, alive = psutil.wait_procs(children, timeout=timeout)
-
-#         # Forcefully kill any remaining child processes
-#         for child in alive:
-#             try:
-#                 os.kill(child.pid, signal.SIGKILL)  # Send SIGKILL to remaining processes
-#             except psutil.NoSuchProcess:
-#                 pass
-
-#         # Now terminate the parent process
-#         parent.terminate()  # Send SIGTERM to parent
-#         parent.wait(timeout=timeout)  # Wait for the parent to terminate
-
-#         # If the parent is still alive, forcefully kill it
-#         if parent.is_running():
-#             os.kill(pid, signal.SIGKILL)  # Send SIGKILL to parent
-
-#     except psutil.NoSuchProcess:
-#         pass
 
 def check_correctness(
     task_id: int,

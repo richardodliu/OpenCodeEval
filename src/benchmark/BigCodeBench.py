@@ -11,7 +11,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from benchmark.base import Benchmark
 from sanitize import sanitize
 from utils import refine_text, stream_jsonl
-from eval.unittest_execution import check_correctness
+from eval.unit_test import check_correctness
 
 class BigCodeBench(Benchmark):
 
@@ -37,69 +37,77 @@ class BigCodeBench(Benchmark):
         elif self.name == "BigCodeBench":
             self.path = self.fullset_path
 
-    def get_task(self):
-        
-        return list(stream_jsonl(filename = self.path))
+        self.tasks = self.get_task()
 
+    def get_task(self):
+        """
+        Get the task data from the jsonl file into a dictionary.
+        """
+
+        tasks = {}
+        
+        for task_data in stream_jsonl(filename=self.path):
+
+            task_id = int(task_data["task_id"].split("/")[-1])
+            
+            tasks[task_id] = task_data
+        
+        return tasks
+    
     def get_prompt(self):
         """
-        Get the prompt for the test set.
+        Builds the prompt for the LM to generate from.
         """
-        task_set = self.get_task()
 
-        if self.prompt_type == "Completion":
-            return [refine_text(data["complete_prompt"]) for data in task_set]
-        elif self.prompt_type == "Instruction":
-            return [refine_text(data["instruct_prompt"]) for data in task_set]
+        prompts = []
+        for task_id, task_data in self.tasks.items():
 
-    def postprocess_generation(self, generation_set):
+            if self.prompt_type == "Completion":
+                prompt = task_data['complete_prompt']
+            elif self.prompt_type == "Instruction":
+                prompt = task_data['instruct_prompt']
+
+            prompts.append(
+                dict(
+                    task_id = task_id,
+                    prompt = refine_text(prompt)
+                )
+            )
+
+        return prompts
+
+    def postprocess_generation(self, generation):
         """
         Postprocess the generations.
         """
-        task_set = self.get_task()
-        assert len(generation_set) == len(task_set), f"Num generations : {len(generation_set)} not match Test set length: {len(task_set)}"
 
-        solution_set = []
-        for index, sample_generations in tqdm(enumerate(generation_set), total=len(generation_set), desc="Postprocessing"):
+        entry_point = self.tasks[generation['task_id']]["entry_point"]
 
-            assert len(sample_generations) == self.num_samples, \
-                f"Num generations : {len(sample_generations)} not match Num samples: {self.num_samples}"
-            solution_set.append([sanitize(single_generation, task_set[index]["entry_point"]) for single_generation in sample_generations])
+        result = dict(
+            task_id = generation['task_id'],
+            completion_id = generation['completion_id'],
+            solution = sanitize(generation['completion'], entry_point)
+        )
 
-        return solution_set
+        return result
 
-    def process_results(self, solutions):
+    def process_results(self, solution):
+        """
+        Takes the list of LM generations and evaluates them against the test cases
+        """
 
-        eval_args = []
-        task_set = self.get_task()
+        task_data = self.tasks[solution['task_id']]
 
-        for task_data, solutions_list in zip(task_set, solutions):
-            assert len(solutions_list) == self.num_samples, f"Num completions : {len(solutions_list)} not match Num samples: {self.num_samples}"
-            task_id = int(task_data["task_id"].split('/')[-1])
-            for solution_id, solution_data in enumerate(solutions_list):
-                solution = (
-                    task_data["code_prompt"] + "\n" 
-                    + "    pass\n" + "\n"
-                    + solution_data + "\n"
-                )
-
-                eval_args.append({
-                    "task_id": task_id,
-                    "solution_id": solution_id,
-                    "solution": solution,
-                    "test": task_data["test"]
-                })
-
-        with ProcessPoolExecutor(max_workers=self.num_workers) as executor:
-            futures = []
-            for eval in eval_args:
-                args = (eval['task_id'], eval['solution_id'], eval['solution'], eval['test'], self.timeout)
-                future = executor.submit(check_correctness, *args)
-                futures.append(future)
-            
-            evalution_set = []
-            for future in tqdm(as_completed(futures), total=len(futures), desc="Completing tasks"):
-                result = future.result()
-                evalution_set.append(result)
-
-        return evalution_set
+        code = (
+            task_data["code_prompt"] + "\n" 
+            + "    pass\n" + "\n"
+            + solution['solution'] + "\n"
+        )
+        
+        result = check_correctness(solution['task_id'],
+                                   solution['completion_id'],
+                                   code,
+                                   task_data["test"],
+                                   self.timeout)
+        
+        return result

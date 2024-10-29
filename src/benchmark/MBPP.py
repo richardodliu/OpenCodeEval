@@ -35,6 +35,9 @@ class MBPP(Benchmark):
         self.tasks = self.get_task()
     
     def get_task(self):
+        """
+        Get the task data from the jsonl file into a dictionary.
+        """
 
         tasks = {}
         
