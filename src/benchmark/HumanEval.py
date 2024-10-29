@@ -34,6 +34,9 @@ class HumanEval(Benchmark):
         self.tasks = self.get_task()
 
     def get_task(self):
+        """
+        Get the task data from the jsonl file into a dictionary.
+        """
 
         tasks = {}
         
@@ -69,11 +72,11 @@ class HumanEval(Benchmark):
 
         entry_point = self.tasks[generation['task_id']]["entry_point"]
 
-        result = {
-            'task_id': generation['task_id'],
-            'completion_id': generation['completion_id'],
-            'solution': sanitize(generation['completion'], entry_point)
-        }
+        result = dict(
+            task_id = generation['task_id'],
+            completion_id = generation['completion_id'],
+            solution = sanitize(generation['completion'], entry_point)
+        )
 
         return result
 
