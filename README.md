@@ -32,7 +32,7 @@ OpenCodeEval is a robust framework designed to evaluate LLMs' performance on cod
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/OpenCodeEval.git
+git clone https://github.com/richardodliu/OpenCodeEval.git
 cd OpenCodeEval
 ```
 
