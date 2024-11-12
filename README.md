@@ -19,10 +19,12 @@ OpenCodeEval is a robust framework designed to evaluate LLMs' performance on cod
 - Flexible model support:
   - Base models
   - Chat models
-  - OpenAI API integration
-  - vLLM acceleration
 
-- Comprehensive evaluation metrics:
+- Backend support:
+  - vLLM acceleration
+  - OpenAI API integration (coming soon)
+
+- Comprehensive evaluation tools:
   - Pass@k metrics
   - Multiple sample evaluation
   - Parallel processing
