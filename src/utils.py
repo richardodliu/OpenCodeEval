@@ -9,15 +9,38 @@ import json
 import itertools
 import numpy as np
 
-from typing import Dict, List, Union, Iterable
+from tqdm import tqdm
 from collections import defaultdict
-from transformers import AutoTokenizer
+from typing import Dict, List, Union, Iterable, Callable
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
-python_pattern = r"```python[ \t]*[\r\n]+(.*?)[ \t]*[\r\n]+```"
-python_re = re.compile(python_pattern, re.DOTALL | re.IGNORECASE)
+def multi_process_function(function: Callable,
+                           parameters: List,
+                           num_workers: int = 1,
+                           desc: str = "Completing tasks"):
+    
+    if num_workers > len(parameters) or num_workers > os.cpu_count():
+        num_workers = min(os.cpu_count(), len(parameters))
 
-def python_extract(text: str) -> str:
-    match = python_re.search(text)
+    with ThreadPoolExecutor(num_workers) as executor:
+        futures = []
+        for param in parameters:
+            future = executor.submit(function, param)
+            futures.append(future)
+            
+        results = []
+        for future in tqdm(as_completed(futures), total=len(futures), desc=desc):
+            result = future.result()
+            results.append(result)
+
+    return results
+
+def program_extract(text: str, program: str = "python") -> str:
+
+    program_pattern = rf"```{program}[ \t]*[\r\n]+(.*?)[ \t]*[\r\n]+```"
+    program_re = re.compile(program_pattern, re.DOTALL | re.IGNORECASE)
+
+    match = program_re.search(text)
     if match:
         return match.group(1)
     else:

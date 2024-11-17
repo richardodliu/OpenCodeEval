@@ -4,38 +4,13 @@ import argparse
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 import numpy as np
+from tqdm import tqdm
 
 from args import get_args, check_args
-from utils import refine_text, write_jsonl, group_and_count, estimate_pass_at_k
+from utils import refine_text, write_jsonl, group_and_count, estimate_pass_at_k, multi_process_function, program_extract
 
 from backend.vllm import VllmGenerator
 from factory import BenchmarkFactory
-
-
-from tqdm import tqdm
-from typing import Callable, List
-from concurrent.futures import ThreadPoolExecutor, as_completed
-
-def multi_process_function(function: Callable,
-                           parameters: List,
-                           num_workers: int = 1,
-                           desc: str = "Completing tasks"):
-    
-    if num_workers > len(parameters) or num_workers > os.cpu_count():
-        num_workers = min(os.cpu_count(), len(parameters))
-
-    with ThreadPoolExecutor(num_workers) as executor:
-        futures = []
-        for param in parameters:
-            future = executor.submit(function, param)
-            futures.append(future)
-            
-        results = []
-        for future in tqdm(as_completed(futures), total=len(futures), desc=desc):
-            result = future.result()
-            results.append(result)
-
-    return results
 
 def main():
     parser = argparse.ArgumentParser()

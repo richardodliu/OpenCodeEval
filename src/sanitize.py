@@ -12,7 +12,7 @@ import traceback
 
 from typing import Dict, List, Optional, Set, Tuple
 
-from utils import refine_text, python_extract
+from utils import refine_text, program_extract
 
 
 def syntax_check(code, verbose = False):
