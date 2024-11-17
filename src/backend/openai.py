@@ -4,17 +4,14 @@ import sys
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.extend([os.path.dirname(ROOT), os.path.dirname(os.path.dirname(ROOT))])
 
-import openai
-
 from tqdm import tqdm
 from typing import List
 from openai import OpenAI
-from vllm import LLM, SamplingParams
-
+from typing import Dict
 
 from backend.base import Generator
 
-from utils import refine_text
+from utils import refine_text, multi_process_function, program_extract
 
 class OpenaiGenerator(Generator):
     def __init__(self,
@@ -23,9 +20,8 @@ class OpenaiGenerator(Generator):
                  batch_size : int = 1,
                  temperature : float = 0.0,
                  max_tokens : int = 1024,
-                 eos: List[str] = None,
-                 num_gpus: int = 1,
-                 trust_remote_code: bool = True,
+                 num_samples : int = 200,
+                 eos: List[str] = None
                 ) -> None:
         super().__init__(model_name)
 
@@ -34,66 +30,77 @@ class OpenaiGenerator(Generator):
         self.batch_size = batch_size
         self.temperature = temperature
         self.max_tokens = max_tokens
-        self.num_gpus = num_gpus
-        self.trust_remote_code = trust_remote_code
+        self.num_samples = num_samples
         self.eos = eos
-        
 
-        self.model = LLM(model = self.model_name,
-                         max_model_len = 2048,
-                         tensor_parallel_size = self.num_gpus,
-                         trust_remote_code = self.trust_remote_code)
-        
-        self.model.set_tokenizer(tokenizer=self.tokenizer)
+        self.client = OpenAI(
+            base_url = 'http://openai.infly.tech/v1/',
+            api_key='sk-z4S1UssPDKChWJgoc6EMRorXmB25kXFkgGkpZfXgxpfBzZkk'
+        )
 
     def is_chat(self) -> bool:
         if self.model_type == "Chat":
-            assert self.tokenizer.chat_template is not None
             return True
         else:
             return False
 
-    def generate(self, prompts: List[str],
-                 num_samples: int = 200,
-                 response_prefix: str = ""
-                ) -> List[str]:
-
-        if self.is_chat():
-            prompts = [make_chat_prompt(prompt, self.tokenizer, response_prefix) for prompt in prompts]
-        print(prompts[0])
-        sample_prompts = [prompt for prompt in prompts for _ in range(num_samples)]
-
-        assert len(sample_prompts) == (len(prompts) * num_samples)
-        assert all(sample_prompts[i:i + num_samples] == [sample_prompts[i]] * num_samples for i in range(0, len(sample_prompts), num_samples))
-
-        generations = []
-
-        for batch_start in tqdm(range(0, len(sample_prompts), self.batch_size)):
-            batch = sample_prompts[batch_start : batch_start + self.batch_size]
-            batch_outputs = self.model.generate(
-                batch,
-                SamplingParams(
-                    temperature = self.temperature,
-                    max_tokens = 768,
-                    top_p = 1.0,
-                    stop = self.eos,
-                ),
-                use_tqdm = False,
+    def connect_server(self, prompt, num_samples):
+        try:
+            result = self.client.chat.completions.create(
+                model = self.model_name,
+                messages=[
+                    {"role": "user", "content": prompt['prompt']}
+                ], 
+                n = num_samples,
+                stream = False,
+                temperature = self.temperature,
+                max_tokens = self.max_tokens,
+                stop = self.eos,
+                extra_headers={'apikey': 'sk-z4S1UssPDKChWJgoc6EMRorXmB25kXFkgGkpZfXgxpfBzZkk'},
             )
+            # 为每个回复创建一个字典，并收集到列表中
+            results = [
+                dict(
+                    task_id=prompt['task_id'],
+                    completion_id=i,
+                    completion=choice.message.content
+                )
+                for i, choice in enumerate(result.choices)
+            ]
+            
+        except Exception as e:
+            # 发生错误时，创建相同数量的错误信息字典
+            results = [
+                dict(
+                    task_id=prompt['task_id'],
+                    completion_id=i,
+                    completion='error:{}'.format(e)
+                )
+                for i in range(num_samples)
+            ]
+            
+        return results
+    
+    def generate(self,
+                 prompt_set: List[Dict],
+                 eos: List[str] = None,
+                 response_prefix: str = "",
+                 response_suffix: str = ""
+                ) -> List[Dict]:  # 修改返回类型注释
+        
+        results = multi_process_function(self.connect_server, 
+                                        prompt_set[:10],
+                                        num_workers = self.batch_size,
+                                        desc="Generating")
+        
+        # 展平结果列表（因为每个 prompt 会返回多个结果）
+        generations = [item for sublist in results for item in sublist]
+        
+        return generations
+        
+        
+        
+        
+        
 
-            batch_generations = []
-            for output in batch_outputs:
-                prompt = output.prompt
-                generation = output.outputs[0].text
-                if not self.is_chat():
-                    batch_generations.append(refine_text(prompt + "\n" + generation))
-                else:
-                    batch_generations.append(refine_text(generation))
-
-            generations.extend(batch_generations)
-
-        grouped_generatuons = [generations[i:i + num_samples] for i in range(0, len(generations), num_samples)]
-        assert len(grouped_generatuons) == len(prompts)
-        assert all(len(grouped_generatuons[i]) == num_samples for i in range(len(grouped_generatuons)))
-
-        return grouped_generatuons
+        

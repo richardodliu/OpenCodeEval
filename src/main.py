@@ -10,7 +10,7 @@ from args import get_args, check_args
 from utils import refine_text, write_jsonl, group_and_count, estimate_pass_at_k, multi_process_function, program_extract
 
 from backend.vllm import VllmGenerator
-from factory import BenchmarkFactory
+from factory import BenchmarkFactory, BackendFactory
 
 def main():
     parser = argparse.ArgumentParser()
@@ -22,14 +22,7 @@ def main():
 
     task = BenchmarkFactory.get_task(args)
 
-    decoder = VllmGenerator(model_name = args.model_name,
-                            model_type = args.model_type,
-                            tokenizer_name = args.tokenizer_name,
-                            num_gpus = args.num_gpus,
-                            batch_size = args.batch_size,
-                            temperature = args.temperature,
-                            trust_remote_code = args.trust_remote_code,
-                            max_tokens = args.max_tokens)
+    decoder = BackendFactory.get_backend(args)
 
     prompts = task.get_prompt()
 
@@ -39,7 +32,6 @@ def main():
 
     end_words = task.general_stop_words + task.completion_stop_words if args.model_type == "Base" else task.general_stop_words
     generations = decoder.generate(prompts,
-                                   args.num_samples,
                                    end_words,
                                    args.response_prefix,
                                    args.response_suffix)

@@ -11,8 +11,16 @@ def get_args(parser):
     parser.add_argument("--model_name", default = None, type=str)
     parser.add_argument("--tokenizer_name", default = None, type=str)
     parser.add_argument("--trust_remote_code", action="store_true")
-    parser.add_argument("--backend", default="vllm", type=str, choices=["vllm", "hf", "openai"])
-    parser.add_argument("--task", default="HumanEval", type=str, choices=["HumanEval", "MBPP", "LeetCode", "BigCodeHard", "BigCodeBench", "HumanEvalPlus", "MBPPPlus", "MBPPBase"])
+    parser.add_argument("--backend", default="vllm", type=str, choices=["vllm", "openai"])
+    parser.add_argument("--task", default="HumanEval", type=str, choices=[  "HumanEval",
+                                                                            "MBPP",
+                                                                            "LeetCode",
+                                                                            "BigCodeHard",
+                                                                            "BigCodeBench",
+                                                                            "HumanEvalPlus",
+                                                                            "MBPPPlus",
+                                                                            "MBPPBase",
+                                                                            "BirdDev"])
     parser.add_argument("--prompt_type", default="Instruction", type=str, choices=["Completion", "Instruction"])
     parser.add_argument("--model_type", default="Chat", type=str, choices=["Base", "Chat"])
     

@@ -1,3 +1,4 @@
 # Python
 *.pyc
 __pycache__/
+*.sqlite

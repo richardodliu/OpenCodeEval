@@ -29,6 +29,7 @@ class VllmGenerator(Generator):
                  batch_size : int = 1,
                  temperature : float = 0.0,
                  max_tokens : int = 1024,
+                 num_samples: int = 200,
                  num_gpus: int = 1,
                  trust_remote_code: bool = True,
                 ) -> None:
@@ -40,6 +41,7 @@ class VllmGenerator(Generator):
         self.batch_size = batch_size
         self.temperature = temperature
         self.max_tokens = max_tokens
+        self.num_samples = num_samples
         self.dtype = dtype
         self.num_gpus = num_gpus
         self.trust_remote_code = trust_remote_code
@@ -84,7 +86,6 @@ class VllmGenerator(Generator):
 
     def generate(self,
                  prompt_set: List[Dict],
-                 num_samples: int = 200,
                  eos: List[str] = None,
                  response_prefix: str = "",
                  response_suffix: str = ""
@@ -97,7 +98,7 @@ class VllmGenerator(Generator):
         logger.info("Example Prompt:\n{}", prompt_set[0]['prompt'])
 
         sampling_params = SamplingParams(
-            n = num_samples,
+            n = self.num_samples,
             temperature = self.temperature,
             max_tokens = self.max_tokens,
             top_p = 1.0,
