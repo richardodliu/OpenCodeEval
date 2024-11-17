@@ -14,7 +14,7 @@ from vllm import LLM, SamplingParams
 
 from backend.base import Generator
 
-from utils import make_chat_prompt, refine_text
+from utils import refine_text
 
 class OpenaiGenerator(Generator):
     def __init__(self,

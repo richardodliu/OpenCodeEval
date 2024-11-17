@@ -18,7 +18,7 @@ from vllm.distributed.parallel_state import destroy_distributed_environment, des
 
 from backend.base import Generator
 
-from utils import make_chat_prompt, refine_text
+from utils import refine_text
 
 class VllmGenerator(Generator):
     def __init__(self,
@@ -43,23 +43,33 @@ class VllmGenerator(Generator):
         self.dtype = dtype
         self.num_gpus = num_gpus
         self.trust_remote_code = trust_remote_code
-        
-        self.tokenizer = AutoTokenizer.from_pretrained(self.tokenizer_name,
-                                                       model_max_length = self.max_tokens,
-                                                       trust_remote_code = self.trust_remote_code,
-                                                       use_fast = True)
 
         self.model = LLM(model = self.model_name,
-                         tokenizer = None,
+                         tokenizer = self.tokenizer_name,
                          max_model_len = self.max_tokens,
                          tensor_parallel_size = self.num_gpus,
                          trust_remote_code = self.trust_remote_code)
         
-        self.model.set_tokenizer(tokenizer = self.tokenizer)
+    
+    def make_chat_template(self, prompt: str, response_prefix: str = "") -> str:
+        if self.is_chat():
+            return self.model.get_tokenizer().apply_chat_template(
+                [
+                    {"role": "user", "content":  prompt},
+                ],
+                tokenize = False,
+                add_generation_prompt = True
+            ) + response_prefix
+        else:
+            return '''You are a helpful programming assistant.
+### Instruction:
+{}
+### Response:
+'''.format(prompt.strip()).lstrip() + response_prefix
 
     def is_chat(self) -> bool:
         if self.model_type == "Chat":
-            assert self.tokenizer.chat_template is not None
+            assert self.model.get_tokenizer().chat_template is not None
             return True
         else:
             return False
@@ -82,7 +92,7 @@ class VllmGenerator(Generator):
 
         if self.is_chat():
             for prompt in prompt_set:
-                prompt['prompt'] = make_chat_prompt(prompt['prompt'], self.tokenizer, response_prefix)
+                prompt['prompt'] = self.make_chat_template(prompt['prompt'])
 
         logger.info("Example Prompt:\n{}", prompt_set[0]['prompt'])
 
@@ -106,12 +116,15 @@ class VllmGenerator(Generator):
 
             for prompt, output in zip(batch_prompt, batch_outputs):
 
-                completions = [completion.text for completion in output.outputs]
-
-                if not self.is_chat():
-                    completions = [refine_text(prompt["prompt"] + "\n\n" + response_prefix + sample + response_suffix) for sample in completions]
-                else:
-                    completions = [refine_text(response_prefix + sample + response_suffix) for sample in completions]
+                # Process completions with prefix/suffix and refine text based on chat mode
+                completions = [
+                    refine_text(
+                        f"{prompt['prompt']}\n\n{response_prefix}{completion.text}{response_suffix}"
+                        if not self.is_chat()
+                        else f"{response_prefix}{completion.text}{response_suffix}"
+                    )
+                    for completion in output.outputs
+                ]
 
                 for completion_id, completion in enumerate(completions):
                     generation_set.append({

@@ -28,40 +28,6 @@ def refine_text(text: str) -> str:
     text = text.replace("\r\n", "\n").replace("\r", "\n")
     return text.strip() + "\n"
 
-def format_test_example(q, tests, code: str=None):
-    prompt = ">>> Problem:\n{}\n>>> Test Cases:\n{}\n".format(q.strip(), "\n".join(tests))
-    if code:
-        code = code.replace("\r", "").replace("\t", "    ")
-        prompt += "\n>>> Code:\n```python\n{}\n```".format(code)
-    return prompt
-
-def make_chat_prompt(prompt: str,
-                     tokenizer: AutoTokenizer,
-                     response_prefix: str = ""
-                    ) -> str:
-    # directly return prompt if it does not have a tokenizer.chat_template
-    if tokenizer.chat_template:
-
-        if 'ckpt' in tokenizer.name_or_path or 'checkpoint' in tokenizer.name_or_path or 'ckp' in tokenizer.name_or_path:
-
-            return '''
-### Instruction:
-{}
-### Response:
-'''.format(prompt.strip()).lstrip()
-        
-        else:
-            prompt = tokenizer.apply_chat_template(
-            [
-                {"role": "user", "content":  prompt},
-            ],
-            tokenize = False,
-            add_generation_prompt = True
-        ) + response_prefix
-        
-    return prompt[len(tokenizer.bos_token):] if prompt.startswith(tokenizer.bos_token) else prompt
-
-
 def stream_jsonl(filename: str) -> Iterable[Dict]:
     """
     Parses each jsonl line and yields it as a dictionary
