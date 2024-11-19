@@ -1,5 +1,7 @@
 # Python
-*.pyc
 __pycache__/
+save/
+*.pyc
 *.sqlite
 *.zip
+*.sqlite

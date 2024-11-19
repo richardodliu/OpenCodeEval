@@ -20,9 +20,11 @@ def get_args(parser):
                                                                             "HumanEvalPlus",
                                                                             "MBPPPlus",
                                                                             "MBPPBase",
-                                                                            "BirdDev"])
+                                                                            "BirdDev",
+                                                                            "SpiderDev"])
     parser.add_argument("--prompt_type", default="Instruction", type=str, choices=["Completion", "Instruction"])
     parser.add_argument("--model_type", default="Chat", type=str, choices=["Base", "Chat"])
+    parser.add_argument("--time_out", default = 3, type=int)
     
     #===================Computer Parser===================
     parser.add_argument("--num_gpus", default = 1, type=int)

@@ -7,9 +7,8 @@ import numpy as np
 from tqdm import tqdm
 
 from args import get_args, check_args
-from utils import refine_text, write_jsonl, group_and_count, estimate_pass_at_k, multi_process_function, program_extract
+from utils import refine_text, write_jsonl, stream_jsonl, group_and_count, estimate_pass_at_k, multi_process_function
 
-from backend.vllm import VllmGenerator
 from factory import BenchmarkFactory, BackendFactory
 
 def main():
@@ -22,8 +21,6 @@ def main():
 
     task = BenchmarkFactory.get_task(args)
 
-    decoder = BackendFactory.get_backend(args)
-
     prompts = task.get_prompt()
 
     for prompt in prompts:
@@ -31,11 +28,14 @@ def main():
     write_jsonl(save_path + "/prompts.jsonl", prompts)
 
     end_words = task.general_stop_words + task.completion_stop_words if args.model_type == "Base" else task.general_stop_words
-    generations = decoder.generate(prompts,
-                                   end_words,
-                                   args.response_prefix,
-                                   args.response_suffix)
-    write_jsonl(save_path + "/generations.jsonl", generations)
+    
+    decoder = BackendFactory.get_backend(args)
+    # generations = decoder.generate(prompts,
+    #                                end_words,
+    #                                args.response_prefix,
+    #                                args.response_suffix)
+    # write_jsonl(save_path + "/generations.jsonl", generations)
+    generations = list(stream_jsonl(save_path + "/generations.jsonl"))
 
     solutions = multi_process_function(function = task.postprocess_generation,
                                        parameters = generations,

@@ -10,6 +10,7 @@ from benchmark.MBPPPlus import MBPPPlus
 from benchmark.LeetCode import LeetCode
 from benchmark.BigCodeBench import BigCodeBench
 from benchmark.Bird import Bird
+from benchmark.Spider import Spider
 
 from backend.vllm import VllmGenerator
 from backend.openai import OpenaiGenerator
@@ -19,6 +20,7 @@ class BenchmarkFactory:
     def get_task(args):
         if args.task == "HumanEval" or args.task == "HumanEvalPlus":
             return HumanEval(name = args.task,
+                             timeout = args.time_out,
                              prompt_type = args.prompt_type)
         elif args.task == "MBPP":
             return MBPP(name = args.task,
@@ -34,7 +36,13 @@ class BenchmarkFactory:
                                 prompt_type = args.prompt_type)
         elif args.task == "BirdDev":
             return Bird(name = args.task,
+                        timeout = args.time_out,
                         prompt_type = args.prompt_type)
+        elif args.task == "SpiderDev":
+            return Spider(name = args.task,
+                          timeout = args.time_out,
+                          prompt_type = args.prompt_type
+            )
         else: 
             raise ValueError("Unknown Task type")
 
@@ -57,6 +65,7 @@ class BackendFactory:
                                    model_type = args.model_type,
                                    temperature = args.temperature,
                                    max_tokens = args.max_tokens,
+                                   num_samples = args.num_samples,
                                    batch_size = args.batch_size)
         else:
             raise ValueError("Unknown Backend type")
