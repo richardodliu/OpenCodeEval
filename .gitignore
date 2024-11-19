@@ -4,5 +4,6 @@ database/
 save/
 *.pyc
 *.sqlite
+*.sql
 *.zip
-*.sqlite
+*.csv
