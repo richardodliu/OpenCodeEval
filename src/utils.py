@@ -13,7 +13,7 @@ import numpy as np
 
 from tqdm import tqdm
 from collections import defaultdict
-from typing import Dict, List, Union, Iterable, Callable
+from typing import Dict, List, Union, Iterable, Callable, Literal
 from func_timeout import func_timeout, FunctionTimedOut
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -38,14 +38,21 @@ def multi_process_function(function: Callable,
 
     return results
 
-def program_extract(text: str, program: str = "python") -> str:
+def program_extract(text: str,
+                    program: str = "python",
+                    mode: Literal["first", "last", "all"] = "all") -> str:
 
     program_pattern = rf"```{program}[ \t]*[\r\n]+(.*?)[ \t]*[\r\n]+```"
     program_re = re.compile(program_pattern, re.DOTALL | re.IGNORECASE)
 
-    matches = program_re.findall(text)  # 找到所有匹配项
+    matches = program_re.findall(text)
     if matches:
-        return matches[-1]  # 返回最后一个匹配的内容
+        if mode == "first":
+            return matches[0]
+        elif mode == "last":
+            return matches[-1]
+        elif mode == "all":
+            return "\n\n".join(matches)
     else:
         return ""
 

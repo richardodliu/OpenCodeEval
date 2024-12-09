@@ -10,7 +10,7 @@ sys.path.extend([os.path.dirname(ROOT), os.path.dirname(os.path.dirname(ROOT))])
 import ast
 import traceback
 
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple, Literal
 
 from utils import refine_text, program_extract
 
@@ -87,8 +87,6 @@ def has_return_statement(node: ast.AST) -> bool:
 def sanitize(text: str, entrypoint: Optional[str] = None) -> str:
 
     text = refine_text(text)
-
-    # text = python_extract(text)
 
     code = extract_longest_valid_code(text)
     tree = ast.parse(code)
