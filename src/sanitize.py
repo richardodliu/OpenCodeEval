@@ -1,4 +1,4 @@
-"""Post-processing LLM-generated Python code implemented using tree-sitter."""
+"""Post-processing LLM-generated Python code implemented using AST."""
 
 import os
 import sys
@@ -10,9 +10,8 @@ sys.path.extend([os.path.dirname(ROOT), os.path.dirname(os.path.dirname(ROOT))])
 import ast
 import traceback
 
-from typing import Dict, List, Optional, Set, Tuple, Literal
-
-from utils import refine_text, program_extract
+from typing import Dict, List, Optional, Set, Tuple
+from utils import refine_text
 
 
 def syntax_check(code, verbose = False):
