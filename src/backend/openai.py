@@ -12,7 +12,7 @@ from loguru import logger
 
 from backend.base import Generator
 
-from utils import refine_text, multi_process_function, program_extract
+from utils import multi_process_function
 
 class OpenaiGenerator(Generator):
     def __init__(self,
