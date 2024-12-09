@@ -41,9 +41,9 @@ def program_extract(text: str, program: str = "python") -> str:
     program_pattern = rf"```{program}[ \t]*[\r\n]+(.*?)[ \t]*[\r\n]+```"
     program_re = re.compile(program_pattern, re.DOTALL | re.IGNORECASE)
 
-    match = program_re.search(text)
-    if match:
-        return match.group(1)
+    matches = program_re.findall(text)  # 找到所有匹配项
+    if matches:
+        return matches[-1]  # 返回最后一个匹配的内容
     else:
         return ""
 

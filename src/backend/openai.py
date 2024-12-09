@@ -55,7 +55,6 @@ class OpenaiGenerator(Generator):
                 n = self.num_samples,
                 stream = False,
                 temperature = self.temperature,
-                # extra_headers={'apikey': 'abc123'},
             )
             # 为每个回复创建一个字典，并收集到列表中
             results = [

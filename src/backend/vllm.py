@@ -134,7 +134,7 @@ class VllmGenerator(Generator):
                         'completion': completion
                     })
 
-        assert len(generation_set) == len(prompt_set) * num_samples, "Number of generations does not match the expected number."
+        assert len(generation_set) == len(prompt_set) * self.num_samples, "Number of generations does not match the expected number."
 
         self.release_memory()
 

@@ -37,6 +37,9 @@ class Bird(Benchmark):
 
         self.tasks = self.get_task()
 
+        self.general_stop_words = []
+        self.completion_stop_words = []
+        
     def get_task(self):
         """
         Get the task data from the json file into a dictionary.
@@ -79,7 +82,7 @@ class Bird(Benchmark):
         result = dict(
             task_id = generation['task_id'],
             completion_id = generation['completion_id'],
-            solution = program_extract(generation['completion'], 'sql')
+            solution = ' '.join(program_extract(generation['completion'], 'sql').splitlines())
         )
 
         return result

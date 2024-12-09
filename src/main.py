@@ -30,11 +30,11 @@ def main():
     end_words = task.general_stop_words + task.completion_stop_words if args.model_type == "Base" else task.general_stop_words
     
     decoder = BackendFactory.get_backend(args)
-    # generations = decoder.generate(prompts,
-    #                                end_words,
-    #                                args.response_prefix,
-    #                                args.response_suffix)
-    # write_jsonl(save_path + "/generations.jsonl", generations)
+    generations = decoder.generate(prompts,
+                                   end_words,
+                                   args.response_prefix,
+                                   args.response_suffix)
+    write_jsonl(save_path + "/generations.jsonl", generations)
     generations = list(stream_jsonl(save_path + "/generations.jsonl"))
 
     solutions = multi_process_function(function = task.postprocess_generation,
