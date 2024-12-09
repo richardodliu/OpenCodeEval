@@ -4,7 +4,6 @@ import sys
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.extend([os.path.dirname(ROOT), os.path.dirname(os.path.dirname(ROOT))])
 
-from tqdm import tqdm
 from typing import List
 from openai import OpenAI
 from typing import Dict

@@ -7,12 +7,14 @@ sys.path.extend([os.path.dirname(ROOT), os.path.dirname(os.path.dirname(ROOT))])
 import re
 import gzip
 import json
+import sqlite3
 import itertools
 import numpy as np
 
 from tqdm import tqdm
 from collections import defaultdict
 from typing import Dict, List, Union, Iterable, Callable
+from func_timeout import func_timeout, FunctionTimedOut
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 def multi_process_function(function: Callable,
@@ -125,3 +127,31 @@ def estimate_pass_at_k(
         num_samples_it = iter(num_samples)
 
     return np.array([estimator(int(n), int(c), k) for n, c in zip(num_samples_it, num_correct)])
+
+def execute_sql(predicted_sql,ground_truth, db_path):
+    conn = sqlite3.connect(db_path)
+    # Connect to the database
+    cursor = conn.cursor()
+    cursor.execute(predicted_sql)
+    predicted_res = cursor.fetchall()
+    cursor.execute(ground_truth)
+    ground_truth_res = cursor.fetchall()
+    result = "failed"
+    passed = False
+    if set(predicted_res) == set(ground_truth_res):
+        result = "passed"
+        passed = True
+    return result, passed
+
+def execute_model(predicted_sql,ground_truth, db_place, meta_time_out):
+    try:
+        result, passed = func_timeout(meta_time_out, execute_sql,
+                                  args=(predicted_sql, ground_truth, db_place))
+    except FunctionTimedOut:
+        result = "timeout"
+        passed = False
+    except Exception as e:
+        result = f"error:{e}"
+        passed = False
+
+    return result, passed
