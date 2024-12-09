@@ -56,7 +56,7 @@ class OpenaiGenerator(Generator):
                 stream = False,
                 temperature = self.temperature,
             )
-            # 为每个回复创建一个字典，并收集到列表中
+            
             results = [
                 dict(
                     task_id=prompt['task_id'],
@@ -68,7 +68,6 @@ class OpenaiGenerator(Generator):
             
         except Exception as e:
             print(f"Error: {e}")
-            sys.exit(0)
             results = [
                 dict(
                     task_id=prompt['task_id'],
