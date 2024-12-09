@@ -92,7 +92,7 @@ class OpenaiGenerator(Generator):
                                         num_workers=self.batch_size,
                                         desc="Generating")
         
-        # 展平结果列表（因为每个 prompt 会返回多个结果）
+
         flattened_results = [item for sublist in results for item in sublist]
         
         return flattened_results
