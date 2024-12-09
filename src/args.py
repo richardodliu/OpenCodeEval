@@ -5,23 +5,27 @@ from loguru import logger
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
+BENCHMARKS = [
+    "HumanEval",
+    "MBPP",
+    "LeetCode",
+    "BigCodeHard",
+    "BigCodeBench",
+    "HumanEvalPlus",
+    "MBPPPlus",
+    "MBPPBase",
+    "BirdDev",
+    "SpiderDev"
+]
+
 def get_args(parser):
 
     #===================Model Parser===================
     parser.add_argument("--model_name", default = None, type=str)
     parser.add_argument("--tokenizer_name", default = None, type=str)
     parser.add_argument("--trust_remote_code", action="store_true")
+    parser.add_argument("--task", default="HumanEval", type=str, choices = BENCHMARKS)
     parser.add_argument("--backend", default="vllm", type=str, choices=["vllm", "openai"])
-    parser.add_argument("--task", default="HumanEval", type=str, choices=[  "HumanEval",
-                                                                            "MBPP",
-                                                                            "LeetCode",
-                                                                            "BigCodeHard",
-                                                                            "BigCodeBench",
-                                                                            "HumanEvalPlus",
-                                                                            "MBPPPlus",
-                                                                            "MBPPBase",
-                                                                            "BirdDev",
-                                                                            "SpiderDev"])
     parser.add_argument("--prompt_type", default="Instruction", type=str, choices=["Completion", "Instruction"])
     parser.add_argument("--model_type", default="Chat", type=str, choices=["Base", "Chat"])
     parser.add_argument("--time_out", default = 3, type=int)
