@@ -17,7 +17,7 @@ class MBPP(Benchmark):
     path: str = os.path.abspath(os.path.join(ROOT, "../data/mbpp.jsonl"))
 
     imports_code = PYTHON_IMPORTS
-    chat_stop = PYTHON_STOP
+    chat_stop = PYTHON_STOP + ['```']
     base_stop = ['\n"""', "\nassert"]
 
     few_shots_start = 1
