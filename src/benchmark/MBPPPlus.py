@@ -4,10 +4,6 @@ import sys
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.extend([os.path.dirname(ROOT), os.path.dirname(os.path.dirname(ROOT))])
 
-from tqdm import tqdm
-from multiprocessing.pool import ThreadPool
-from concurrent.futures import ThreadPoolExecutor, as_completed
-
 from benchmark.base import Benchmark, PYTHON_STOP, PYTHON_IMPORTS
 from sanitize import sanitize
 from eval.execution import check_correctness
