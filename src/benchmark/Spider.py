@@ -10,7 +10,7 @@ from typing import Literal
 
 from benchmark.base import Benchmark
 from utils import refine_text, program_extract
-from sql_utils import generate_schema_prompt, execute_model
+from eval.sql_eval import execute_model
 
 class Spider(Benchmark):
 
