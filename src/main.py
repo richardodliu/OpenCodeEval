@@ -9,6 +9,7 @@ from tqdm import tqdm
 from args import get_args, check_args
 from utils import refine_text, write_jsonl, stream_jsonl, group_and_count, estimate_pass_at_k, multi_process_function
 
+from benchmark.base import PYTHON_STOP
 from factory import BenchmarkFactory, BackendFactory
 
 def main():
@@ -27,11 +28,11 @@ def main():
         prompt['prompt'] = refine_text(args.prompt_prefix + prompt['prompt'] + args.prompt_suffix)
     write_jsonl(save_path + "/prompts.jsonl", prompts)
 
-    end_words = task.general_stop_words + task.completion_stop_words if args.model_type == "Base" else task.general_stop_words
+    stop_words = task.chat_stop + task.base_stop if args.model_type == "Base" else task.chat_stop
     
     decoder = BackendFactory.get_backend(args)
     generations = decoder.generate(prompts,
-                                   end_words,
+                                   stop_words,
                                    args.response_prefix,
                                    args.response_suffix)
     write_jsonl(save_path + "/generations.jsonl", generations)

@@ -51,17 +51,19 @@ class VllmGenerator(Generator):
                          max_model_len = self.max_tokens,
                          tensor_parallel_size = self.num_gpus,
                          trust_remote_code = self.trust_remote_code)
+        self.tokenizer = self.model.get_tokenizer()
         
     
     def make_chat_template(self, prompt: str, response_prefix: str = "") -> str:
         if self.is_chat():
-            return self.model.get_tokenizer().apply_chat_template(
+            prompt = self.tokenizer.apply_chat_template(
                 [
                     {"role": "user", "content":  prompt},
                 ],
                 tokenize = False,
                 add_generation_prompt = True
             ) + response_prefix
+            return prompt[len(self.tokenizer.bos_token):] if prompt.startswith(self.tokenizer.bos_token) else prompt
         else:
             return '''You are a helpful programming assistant.
 ### Instruction:

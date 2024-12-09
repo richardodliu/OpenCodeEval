@@ -6,7 +6,7 @@ sys.path.extend([os.path.dirname(ROOT), os.path.dirname(os.path.dirname(ROOT))])
 
 from typing import List
 
-from benchmark.base import Benchmark
+from benchmark.base import Benchmark, PYTHON_STOP, PYTHON_IMPORTS
 from sanitize import sanitize
 from eval.execution import check_correctness
 from utils import refine_text, stream_jsonl
@@ -15,6 +15,10 @@ class MBPP(Benchmark):
 
     name: str = "MBPP"
     path: str = os.path.abspath(os.path.join(ROOT, "../data/mbpp.jsonl"))
+
+    imports_code = PYTHON_IMPORTS
+    chat_stop = PYTHON_STOP
+    base_stop = ['\n"""', "\nassert"]
 
     few_shots_start = 1
     few_shots_end = 4
@@ -33,6 +37,8 @@ class MBPP(Benchmark):
         self.prompt_type = prompt_type
 
         self.tasks = self.get_task()
+
+        self.few_shots_prompt = self.get_few_shots_prompts()
     
     def get_task(self):
         """
@@ -50,7 +56,6 @@ class MBPP(Benchmark):
         
         return tasks
 
-    
     def fewshot_examples(self):
 
         few_shots = []
@@ -93,12 +98,11 @@ class MBPP(Benchmark):
 
         assert self.prompt_type == "Instruction", "Prompt type must be Instruction for MBPP"
 
-        few_shots_prompts = self.get_few_shots_prompts()
         prompts = []
 
         for task_id, task_data in self.tasks.items():
             if task_id >= self.test_start and task_id < self.test_end:
-                prompt = few_shots_prompts + '\n' + self.format_prompt(task_data["text"], task_data["test_list"])
+                prompt = self.few_shots_prompt + '\n' + self.format_prompt(task_data["text"], task_data["test_list"])
                 prompts.append({
                     'task_id': task_id,
                     'prompt': prompt
@@ -110,6 +114,9 @@ class MBPP(Benchmark):
         """
         Postprocess the generations.
         """
+
+        if generation['completion'].startswith(self.few_shots_prompt):
+            generation['completion'] = generation['completion'][len(self.few_shots_prompt):]
 
         return dict(
             task_id = generation['task_id'],
@@ -125,7 +132,7 @@ class MBPP(Benchmark):
         task_data = self.tasks[solution['task_id']]
 
         code =  (
-                    "\n".join(self.imports) + "\n"
+                    "\n".join(self.imports_code) + "\n"
                     + task_data['test_setup_code'] + "\n"
                     + solution['solution'] + "\n"
                     + "\n".join(task_data['test_list'])

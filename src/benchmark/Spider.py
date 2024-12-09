@@ -5,9 +5,6 @@ import json
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.extend([os.path.dirname(ROOT), os.path.dirname(os.path.dirname(ROOT))])
 
-from tqdm import tqdm
-from typing import Literal
-
 from benchmark.base import Benchmark
 from utils import refine_text, program_extract
 from eval.sql_eval import execute_model

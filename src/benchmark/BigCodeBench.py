@@ -4,11 +4,9 @@ import sys
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.extend([os.path.dirname(ROOT), os.path.dirname(os.path.dirname(ROOT))])
 
-from tqdm import tqdm
 from typing import Literal
-from concurrent.futures import ProcessPoolExecutor, as_completed
 
-from benchmark.base import Benchmark
+from benchmark.base import Benchmark, PYTHON_STOP, PYTHON_IMPORTS
 from sanitize import sanitize
 from utils import refine_text, stream_jsonl
 from eval.unit_test import check_correctness
@@ -16,9 +14,14 @@ from eval.unit_test import check_correctness
 class BigCodeBench(Benchmark):
 
     name: str = "BigCodeBench"
+    path: str = None
 
     fullset_path = os.path.abspath(os.path.join(ROOT, "../data/BigCodeBench.jsonl"))
     subset_path = os.path.abspath(os.path.join(ROOT, "../data/BigCodeBench_Hard.jsonl"))
+
+    imports_code = PYTHON_IMPORTS
+    chat_stop = PYTHON_STOP
+    base_stop = ['\n"""', "\nassert"]
 
     def __init__(self,
                  name: str = "BigCodeBench",

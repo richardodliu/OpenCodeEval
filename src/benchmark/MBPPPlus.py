@@ -8,7 +8,7 @@ from tqdm import tqdm
 from multiprocessing.pool import ThreadPool
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from benchmark.base import Benchmark
+from benchmark.base import Benchmark, PYTHON_STOP, PYTHON_IMPORTS
 from sanitize import sanitize
 from eval.execution import check_correctness
 from utils import refine_text, stream_jsonl
@@ -17,6 +17,10 @@ class MBPPPlus(Benchmark):
 
     name: str = "MBPPPlus"
     path: str = os.path.abspath(os.path.join(ROOT, "../data/MBPPPlus.jsonl"))
+
+    imports_code = PYTHON_IMPORTS
+    chat_stop = PYTHON_STOP
+    base_stop = ['\n"""', "\nassert"]
 
     general_stop_words = [  "<|endoftext|>",
                             "<|endofmask|>",
@@ -31,22 +35,6 @@ class MBPPPlus(Benchmark):
                                 "\nimport ",
                                 "\nfrom ",
                                 "\nassert " ]
-
-    imports = [ "import math",
-                "import re",
-                "import sys",
-                "import copy",
-                "import datetime",
-                "import itertools",
-                "import collections",
-                "import heapq",
-                "import functools",
-                "import hashlib",
-                "import numpy",
-                "import numpy as np",
-                "import string",
-                "from typing import *",
-                "from collections import *"]
 
     def __init__(self,
                  name: str = "MBPPPlus",

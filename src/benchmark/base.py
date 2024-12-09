@@ -4,6 +4,28 @@ import sys
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.extend([os.path.dirname(ROOT), os.path.dirname(os.path.dirname(ROOT))])
 
+PYTHON_STOP = [ "\nif __name__",
+                "\ndef main(",
+                "\nprint("
+                ]
+    
+PYTHON_IMPORTS = [  "import math",
+                    "import re",
+                    "import sys",
+                    "import copy",
+                    "import datetime",
+                    "import itertools",
+                    "import collections",
+                    "import heapq",
+                    "import functools",
+                    "import hashlib",
+                    "import numpy",
+                    "import numpy as np",
+                    "import string",
+                    "from typing import *",
+                    "from collections import *"
+                    ]
+
 from abc import ABC, abstractmethod
 
 class Benchmark(ABC):
@@ -11,38 +33,9 @@ class Benchmark(ABC):
     name: str = None
     path: str = None
 
-    general_stop_words = [  "<|endoftext|>",
-                            "<|endofmask|>",
-                            "</s>",
-                            "\nif __name__",
-                            "\ndef main(",
-                            "\nprint(",
-                            '\n```\n'
-                        ]
-    
-    completion_stop_words = [   "\ndef ",
-                                "\nclass ",
-                                "\nimport ",
-                                "\nfrom ",
-                                "\nassert "
-                            ]
-    
-    imports = [ "import math",
-                "import re",
-                "import sys",
-                "import copy",
-                "import datetime",
-                "import itertools",
-                "import collections",
-                "import heapq",
-                "import functools",
-                "import hashlib",
-                "import numpy",
-                "import numpy as np",
-                "import string",
-                "from typing import *",
-                "from collections import *"
-            ]
+    imports = None
+    chat_stop = None
+    base_stop = None
 
     def __init__(self):
         """

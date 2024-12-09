@@ -4,7 +4,7 @@ import sys
 ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.extend([os.path.dirname(ROOT), os.path.dirname(os.path.dirname(ROOT))])
 
-from benchmark.base import Benchmark
+from benchmark.base import Benchmark, PYTHON_STOP, PYTHON_IMPORTS
 from sanitize import sanitize
 from eval.execution import check_correctness
 from utils import refine_text, stream_jsonl
@@ -15,6 +15,10 @@ class HumanEval(Benchmark):
     
     base_path: str = os.path.abspath(os.path.join(ROOT, "../data/HumanEval.jsonl"))
     plus_path: str = os.path.abspath(os.path.join(ROOT, "../data/HumanEvalPlus.jsonl"))
+
+    imports_code = PYTHON_IMPORTS
+    chat_stop = PYTHON_STOP
+    base_stop = ["\ndef ", "\nclass ", "\nimport ", "\nfrom ", "\nassert "]
 
     def __init__(self,
                  name: str = "HumanEval",
@@ -87,7 +91,7 @@ class HumanEval(Benchmark):
 
         task_data = self.tasks[solution['task_id']]
 
-        code = ("\n".join(self.imports) + "\n"
+        code = ("\n".join(self.imports_code) + "\n"
                     + task_data["prompt"] + "\n"
                     + "    pass\n" + "\n"
                     + solution['solution'] + "\n"
