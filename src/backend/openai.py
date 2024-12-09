@@ -34,8 +34,8 @@ class OpenaiGenerator(Generator):
         self.eos = eos
 
         self.client = OpenAI(
-            base_url = 'http://localhost:8000/v1/',
-            api_key='abc123'
+            base_url = os.getenv("OPENAI_BASE_URL"),
+            api_key=os.getenv("OPENAI_API_KEY")
         )
 
     def is_chat(self) -> bool:
@@ -66,7 +66,7 @@ class OpenaiGenerator(Generator):
             ]
             
         except Exception as e:
-            print(f"Error: {e}")
+            logger.error("Error: {}".format(e))
             results = [
                 dict(
                     task_id=prompt['task_id'],
