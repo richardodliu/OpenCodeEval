@@ -1,0 +1,13 @@
+python ../src/main.py \
+    --model_name {{ model_name }} \
+    --save_path {{ save_path }} \
+    --task {{ task }} \
+    --batch_size {{ batch_size }} \
+    --num_samples {{ num_samples }} \
+    --num_gpus {{ num_gpus }} \
+    --num_workers {{ num_workers }} \
+    --prompt_type {{ prompt_type }} \
+    --model_type {{ model_type }} \
+    --prompt_prefix '{{ prompt_prefix }}' \
+    --prompt_suffix '{{ prompt_suffix }}' \
+    --trust_remote_code
