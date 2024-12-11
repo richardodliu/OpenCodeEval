@@ -18,6 +18,9 @@ class Bird(Benchmark):
     dev_path = os.path.abspath(os.path.join(ROOT, "../data/bird-dev/bird-dev.json"))
     dev_database = os.path.abspath(os.path.join(ROOT, "../data/bird-dev/database"))
 
+    chat_stop = []
+    base_stop = []
+
     def __init__(self,
                  name: str = "BirdDev",
                  timeout: float = 3.0,
@@ -33,9 +36,6 @@ class Bird(Benchmark):
             self.database = self.dev_database
 
         self.tasks = self.get_task()
-
-        self.general_stop_words = []
-        self.completion_stop_words = []
         
     def get_task(self):
         """

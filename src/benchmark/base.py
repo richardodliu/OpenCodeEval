@@ -33,9 +33,9 @@ class Benchmark(ABC):
     name: str = None
     path: str = None
 
-    imports = None
-    chat_stop = None
-    base_stop = None
+    imports = []
+    chat_stop = []
+    base_stop = []
 
     def __init__(self):
         """

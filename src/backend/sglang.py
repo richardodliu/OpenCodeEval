@@ -7,34 +7,31 @@ sys.path.extend([os.path.dirname(ROOT), os.path.dirname(os.path.dirname(ROOT))])
 import gc
 import torch
 from loguru import logger
-
 from tqdm import tqdm
 from typing import List, Dict
-
-from vllm import LLM, SamplingParams
-from vllm.distributed.parallel_state import destroy_distributed_environment, destroy_model_parallel
-
 from backend.base import Generator
-
 from utils import refine_text
 
-class VllmGenerator(Generator):
+class SglangGenerator(Generator):
     def __init__(self,
-                 model_name: str,
+                 model_name: str, 
                  tokenizer_name: str = None,
                  model_type: str = "Instruction",
                  dtype: str = "bfloat16",
-                 batch_size : int = 1,
-                 temperature : float = 0.0,
-                 max_tokens : int = 1024,
+                 batch_size: int = 1,
+                 temperature: float = 0.0,
+                 max_tokens: int = 1024,
                  num_samples: int = 200,
                  num_gpus: int = 1,
-                 trust_remote_code: bool = True,
+                 trust_remote_code: bool = True
                 ) -> None:
-        super().__init__(model_name)
+        
+        import sglang as sgl
 
-        print("Initializing a decoder model: {} ...".format(model_name))
-        self.tokenizer_name = tokenizer_name if tokenizer_name is not None else model_name
+        super().__init__(model_name)
+        
+        print(f"Initializing a decoder model: {model_name} ...")
+        self.tokenizer_name = tokenizer_name if tokenizer_name else model_name
         self.model_type = model_type
         self.batch_size = batch_size
         self.temperature = temperature
@@ -44,22 +41,19 @@ class VllmGenerator(Generator):
         self.num_gpus = num_gpus
         self.trust_remote_code = trust_remote_code
 
-        self.model = LLM(model = self.model_name,
-                         tokenizer = self.tokenizer_name,
-                         max_model_len = self.max_tokens,
-                         tensor_parallel_size = self.num_gpus,
-                         trust_remote_code = self.trust_remote_code)
+        # 初始化sglang模型
+        self.model = sgl.Engine(
+            model_name=self.model_name,
+            tensor_parallel_size=self.num_gpus
+        )
         self.tokenizer = self.model.get_tokenizer()
-        
-    
+
     def make_chat_template(self, prompt: str, response_prefix: str = "") -> str:
         if self.is_chat():
             prompt = self.tokenizer.apply_chat_template(
-                [
-                    {"role": "user", "content":  prompt},
-                ],
-                tokenize = False,
-                add_generation_prompt = True
+                [{"role": "user", "content": prompt}],
+                tokenize=False,
+                add_generation_prompt=True
             ) + response_prefix
             if self.tokenizer.bos_token and prompt.startswith(self.tokenizer.bos_token):
                 prompt = prompt[len(self.tokenizer.bos_token):]
@@ -75,58 +69,50 @@ class VllmGenerator(Generator):
         if self.model_type == "Chat":
             assert self.model.get_tokenizer().chat_template is not None
             return True
-        else:
-            return False
-        
+        return False
+
     def release_memory(self):
-        destroy_model_parallel
-        destroy_distributed_environment()
-        del self.model.llm_engine.model_executor
         del self.model
         gc.collect()
         torch.cuda.empty_cache()
 
     def generate(self,
-                 prompt_set: List[Dict],
-                 eos: List[str] = None,
-                 response_prefix: str = "",
-                 response_suffix: str = ""
-                ) -> List[str]:
-
+                prompt_set: List[Dict],
+                eos: List[str] = None,
+                response_prefix: str = "",
+                response_suffix: str = ""
+               ) -> List[str]:
+        
         if self.is_chat():
             for prompt in prompt_set:
                 prompt['prompt'] = self.make_chat_template(prompt['prompt'])
 
-        logger.info("Example Prompt:\n{}", prompt_set[0]['prompt'])
-
-        sampling_params = SamplingParams(
-            n = self.num_samples,
-            temperature = self.temperature,
-            max_tokens = self.max_tokens,
-            top_p = 1.0,
-            stop = eos,
-        )
+        logger.info("示例提示:\n{}", prompt_set[0]['prompt'])
 
         generation_set = []
 
         for batch_start in tqdm(range(0, len(prompt_set), self.batch_size)):
             batch_prompt = prompt_set[batch_start : batch_start + self.batch_size]
-            batch_outputs = self.model.generate(
-                [prompt['prompt'] for prompt in batch_prompt],
-                sampling_params,
-                use_tqdm = False,
-            )
+            
+            # 使用sglang的生成API
+            batch_outputs = []
+            for prompt in batch_prompt:
+                state = self.model.create_state()
+                state.llm(prompt['prompt'], 
+                         temperature=self.temperature,
+                         max_tokens=self.max_tokens,
+                         num_return_sequences=self.num_samples,
+                         stop=eos)
+                batch_outputs.append(state.get_outputs())
 
-            for prompt, output in zip(batch_prompt, batch_outputs):
-
-                # Process completions with prefix/suffix and refine text based on chat mode
+            for prompt, outputs in zip(batch_prompt, batch_outputs):
                 completions = [
                     refine_text(
-                        f"{prompt['prompt']}\n\n{response_prefix}{completion.text}{response_suffix}"
+                        f"{prompt['prompt']}\n\n{response_prefix}{output}{response_suffix}"
                         if not self.is_chat()
-                        else f"{response_prefix}{completion.text}{response_suffix}"
+                        else f"{response_prefix}{output}{response_suffix}"
                     )
-                    for completion in output.outputs
+                    for output in outputs
                 ]
 
                 for completion_id, completion in enumerate(completions):
@@ -136,7 +122,7 @@ class VllmGenerator(Generator):
                         'completion': completion
                     })
 
-        assert len(generation_set) == len(prompt_set) * self.num_samples, "Number of generations does not match the expected number."
+        assert len(generation_set) == len(prompt_set) * self.num_samples, "生成数量与预期不符"
 
         self.release_memory()
 
