@@ -8,6 +8,8 @@ from src.sanitize import sanitize
 from src.utils import refine_text, stream_jsonl
 from src.eval.execution import check_correctness
 
+from typing import List
+
 class MBPP(Benchmark):
 
     name: str = "MBPP"
