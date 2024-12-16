@@ -1,12 +1,4 @@
 """Post-processing LLM-generated Python code implemented using AST."""
-
-import os
-import sys
-import pathlib
-
-ROOT = os.path.dirname(os.path.abspath(__file__))
-sys.path.extend([os.path.dirname(ROOT), os.path.dirname(os.path.dirname(ROOT))])
-
 import ast
 import traceback
 

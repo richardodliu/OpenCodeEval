@@ -2,12 +2,11 @@ import os
 import sys
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-sys.path.extend([os.path.dirname(ROOT), os.path.dirname(os.path.dirname(ROOT))])
 
-from benchmark.base import Benchmark, PYTHON_STOP, PYTHON_IMPORTS
-from sanitize import sanitize
-from eval.execution import check_correctness
-from utils import refine_text, stream_jsonl
+from .base import Benchmark, PYTHON_STOP, PYTHON_IMPORTS
+from src.sanitize import sanitize
+from src.utils import refine_text, stream_jsonl
+from src.eval.execution import check_correctness
 
 class HumanEval(Benchmark):
 

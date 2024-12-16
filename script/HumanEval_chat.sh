@@ -1,4 +1,14 @@
-python ../src/main.py  --model_name "/data/model/deepseek-coder-1.3b-instruct" \
+#!/usr/bin/env bash
+
+# set -x
+
+EVAL_DIR=$(dirname "$(readlink -f "$0")")
+PARENT_DIR=$(dirname "$EVAL_DIR")
+cd "$PARENT_DIR" || exit
+
+echo "OpenCodeEval: $PARENT_DIR"
+
+python src/main.py  --model_name "/data/model/deepseek-coder-1.3b-instruct" \
                     --task "HumanEval" \
                     --batch_size 164 \
                     --prompt_type "Completion" \

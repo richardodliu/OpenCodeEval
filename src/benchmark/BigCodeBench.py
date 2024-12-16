@@ -1,15 +1,12 @@
 import os
-import sys
-
-ROOT = os.path.dirname(os.path.abspath(__file__))
-sys.path.extend([os.path.dirname(ROOT), os.path.dirname(os.path.dirname(ROOT))])
-
 from typing import Literal
 
-from benchmark.base import Benchmark, PYTHON_STOP, PYTHON_IMPORTS
-from sanitize import sanitize
-from utils import refine_text, stream_jsonl
-from eval.unit_test import check_correctness
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from .base import Benchmark, PYTHON_STOP, PYTHON_IMPORTS
+from src.sanitize import sanitize
+from src.utils import refine_text, stream_jsonl
+from src.eval.unit_test import check_correctness
 
 class BigCodeBench(Benchmark):
 
