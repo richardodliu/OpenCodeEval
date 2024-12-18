@@ -3,7 +3,7 @@ import sys
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
-from .base import Benchmark, PYTHON_STOP, PYTHON_IMPORTS
+from src.benchmark.base import Benchmark, PYTHON_STOP, PYTHON_IMPORTS
 from src.sanitize import sanitize
 from src.utils import refine_text, stream_jsonl
 from src.eval.execution import check_correctness
