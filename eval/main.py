@@ -99,22 +99,20 @@ def eval_loop(ckpt_path, benchmark_configs, webhook_url, feishu_msg):
                 logger.exception(f"get score error, step: {step}, handler {benchmark}\ndetails: {e}")
                 logger.info(f"retrying handler {benchmark} in step {step}")
 
-        if feishu_msg:
-            message = build_message(ckpt_path, ckpt2result)
-            send_message(webhook_url, message)
+    if feishu_msg:
+        message = build_message(ckpt_path, ckpt2result)
+        send_message(webhook_url, message)
 
 if __name__ == "__main__":
 
     parser = ArgumentParser()
     parser.add_argument("--checkpoint_path", type=str, required=True)
     parser.add_argument("--config_path", type=str, required=True)
-    parser.add_argument("--interval", type=int, default=60)
     parser.add_argument("--feishu_msg", action="store_true")
 
     args = parser.parse_args()
     checkpoint_path = args.checkpoint_path
     config_path = args.config_path
-    interval = args.interval
     feishu_msg = bool(args.feishu_msg)
 
 

@@ -5,6 +5,7 @@
         "num_samples": 1,
         "num_gpus": 1,
         "num_workers": 10,
+        "max_tokens": 2048,
         "prompt_type": "Completion",
         "model_type": "Chat",
         "prompt_prefix": "Please provide a self-contained Python script that solves the following problem in a markdown code block:\n```python\n",
