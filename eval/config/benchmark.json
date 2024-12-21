@@ -24,5 +24,31 @@
         "model_type": "Chat",
         "prompt_prefix": "Please provide a self-contained Python script that solves the following problem in a markdown code block:\n```python\n",
         "prompt_suffix": "\n```\n"
+    },
+    "mbpp_base" : {
+        "task": "MBPPBase",
+        "batch_size": 378,
+        "num_samples": 1,
+        "num_gpus": 1,
+        "num_workers": 10,
+        "max_tokens": 2048,
+        "time_out": 3,
+        "prompt_type": "Instruction",
+        "model_type": "Chat",
+        "prompt_prefix": "",
+        "prompt_suffix": ""
+    },
+    "mbpp_plus" : {
+        "task": "MBPPPlus",
+        "batch_size": 378,
+        "num_samples": 1,
+        "num_gpus": 1,
+        "num_workers": 10,
+        "max_tokens": 2048,
+        "time_out": 3,
+        "prompt_type": "Instruction",
+        "model_type": "Chat",
+        "prompt_prefix": "",
+        "prompt_suffix": ""
     }
 }
