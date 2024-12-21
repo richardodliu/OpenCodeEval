@@ -10,11 +10,11 @@ echo "OpenCodeEval: $PARENT_DIR"
 
 export CUDA_VISIBLE_DEVICES=2
 
-python src/main.py  --model_name "/data/model/deepseek-coder-1.3b-instruct" \
+python src/main.py  --model_name "../models/deepseek-coder-1.3b-instruct" \
                     --task "MBPPBase" \
                     --batch_size 378 \
                     --prompt_type "Instruction" \
                     --model_type "Chat" \
                     --prompt_prefix "" \
-                    --prompt_suffix $'\nYour code should pass the above test.\n' \
+                    --prompt_suffix "" \
                     --trust_remote_code

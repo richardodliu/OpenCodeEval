@@ -50,9 +50,8 @@ class MBPPPlus(Benchmark):
                      promblem: str,
                      test: str,
                      ) -> str:
-        # promblem = f"You are an expert Python programmer, and here is your task:\n{promblem}\n"
-        # test = f"Your code should pass the test:\n{test}\n"
-        # prompt = promblem + test
+        promblem = f"You are an expert Python programmer, and here is your task:\n{promblem}"
+        test = f"Your code should pass the test:\n{test}"
         prompt = promblem + "\n" + test
         return prompt
     
