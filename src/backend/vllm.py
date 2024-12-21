@@ -65,12 +65,8 @@ class VllmGenerator(Generator):
                 prompt = prompt[len(self.tokenizer.bos_token):]
             return prompt
         else:
-            return '''You are a helpful programming assistant.
-### Instruction:
-{}
-### Response:
-'''.format(prompt.strip()).lstrip() + response_prefix
-
+            return prompt
+    
     def is_chat(self) -> bool:
         if self.model_type == "Chat":
             assert self.model.get_tokenizer().chat_template is not None
