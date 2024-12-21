@@ -16,10 +16,13 @@ from collections import defaultdict
 from typing import Dict, List, Union, Iterable, Callable, Literal
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-def refine_text(text: str) -> str:
+def refine_text(text: str, add_new_line: bool = True) -> str:
     text =  text.replace("\t", "    ")
     text = text.replace("\r\n", "\n").replace("\r", "\n")
-    return text.strip() + "\n"
+    if add_new_line:
+        return text.strip() + "\n"
+    else:
+        return text.strip()
 
 def multi_process_function(function: Callable,
                            parameters: List,
