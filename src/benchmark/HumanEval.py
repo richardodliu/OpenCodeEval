@@ -22,7 +22,8 @@ class HumanEval(Benchmark):
     def __init__(self,
                  name: str = "HumanEval",
                  timeout: float = 3.0,
-                 prompt_type: str = "Completion"): 
+                 prompt_type: str = "Completion"):
+
         super().__init__()
         
         self.name = name
@@ -56,7 +57,7 @@ class HumanEval(Benchmark):
         Builds the prompt for the LM to generate from.
         """
 
-        assert self.prompt_type == "Completion", f"Prompt type must be Completion for HumanEval"
+        assert self.prompt_type == "Completion", "Prompt type must be Completion for HumanEval"
 
         prompts = []
         for task_id, task_data in self.tasks.items():

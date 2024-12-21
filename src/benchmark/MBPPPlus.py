@@ -16,38 +16,35 @@ class MBPPPlus(Benchmark):
     imports_code = PYTHON_IMPORTS
     chat_stop = PYTHON_STOP
     base_stop = ['\n"""', "\nassert"]
-
-    general_stop_words = [  "<|endoftext|>",
-                            "<|endofmask|>",
-                            "</s>",
-                            "\nif __name__",
-                            "\ndef main(",
-                            "\nprint(",
-                            '\n```\n']
-    
-    completion_stop_words = [   "\ndef ",
-                                "\nclass ",
-                                "\nimport ",
-                                "\nfrom ",
-                                "\nassert " ]
+    # TODO: add more stop words, e.g. "\nif __name__", "\ndef main(", "\nprint(", '\n```\n']
 
     def __init__(self,
                  name: str = "MBPPPlus",
-                 num_samples: int = 1,
-                 num_workers: int = 16,
                  timeout: float = 3.0,
                  prompt_type: str = "Instruction"):
         
         super().__init__()
+        
         self.name = name
-        self.num_samples = num_samples
-        self.num_workers = num_workers
         self.timeout = timeout
         self.prompt_type = prompt_type
 
-    def get_task(self):
+        self.tasks = self.get_task()
 
-        return list(stream_jsonl(filename = self.path))
+    def get_task(self):
+        """
+        Get the task data from the jsonl file into a dictionary.
+        """
+
+        tasks = {}
+        
+        for task_data in stream_jsonl(filename=self.path):
+
+            task_id = int(task_data["task_id"])
+            
+            tasks[task_id] = task_data
+        
+        return tasks
     
     def format_prompt(self, 
                      promblem: str,
@@ -60,15 +57,20 @@ class MBPPPlus(Benchmark):
         return prompt
     
     def get_prompt(self):
+        """
+        Builds the prompt for the LM to generate from.
+        """
 
-        assert self.prompt_type == "Instruction", f"Prompt type must be Instruction for {self.name}"
+        assert self.prompt_type == "Instruction", "Prompt type must be Instruction for MBPP"
 
-        task_set = self.get_task()
         prompts = []
-        for task_data in task_set:
-            prompt = self.format_prompt(task_data["text"], task_data["test_list"][0])
-            prompts.append(refine_text(prompt))
-
+        for task_id, task_data in self.tasks.items():
+            prompts.append(
+                dict(
+                    task_id = task_id,
+                    prompt = refine_text(self.format_prompt(task_data["text"], task_data["test_list"][0]))
+                )
+            )
         return prompts
 
     def postprocess_generation(self, generation):
