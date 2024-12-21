@@ -5,7 +5,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 
 from src.benchmark.base import Benchmark, PYTHON_STOP, PYTHON_IMPORTS
 from src.sanitize import sanitize
-from src.utils import refine_text, stream_jsonl
+from src.utils import refine_text, stream_jsonl, program_extract
 from src.eval.execution import check_correctness
 
 class MBPPPlus(Benchmark):
@@ -76,21 +76,18 @@ class MBPPPlus(Benchmark):
         """
         Postprocess the generations.
         """
+
+        try:
+            solution = sanitize(generation['completion'])
+        except Exception:
+            solution = program_extract(generation['completion'], program="python", mode="all")
+        
         return dict(
             task_id = generation['task_id'],
             completion_id = generation['completion_id'],
-            solution = sanitize(generation['completion'])
+            solution = solution
         )
     
-    def process_results(self, solution):
-        """
-        Process the solutions.
-        """
-        return dict(
-            task_id = solution['task_id'],
-            solution_id = solution['solution_id'],
-            solution = solution['solution']
-        )
     
     def process_results(self, solution):
         """Takes the list of LM generations and evaluates them against ground truth references,
