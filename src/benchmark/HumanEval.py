@@ -5,7 +5,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 
 from src.benchmark.base import Benchmark, PYTHON_STOP, PYTHON_IMPORTS
 from src.sanitize import sanitize
-from src.utils import refine_text, stream_jsonl
+from src.utils import refine_text, stream_jsonl, program_extract
 from src.eval.execution import check_correctness
 
 class HumanEval(Benchmark):
@@ -76,10 +76,15 @@ class HumanEval(Benchmark):
 
         entry_point = self.tasks[generation['task_id']]["entry_point"]
 
+        try:
+            solution = sanitize(generation['completion'], entry_point)
+        except Exception:
+            solution = program_extract(generation['completion'], program="python", mode="all")
+
         result = dict(
             task_id = generation['task_id'],
             completion_id = generation['completion_id'],
-            solution = sanitize(generation['completion'], entry_point)
+            solution = solution
         )
 
         return result
