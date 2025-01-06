@@ -2,6 +2,7 @@
     "humaneval_base" : {
         "task": "HumanEval",
         "batch_size": 164,
+        "temperature": 0.0,
         "num_samples": 1,
         "num_gpus": 1,
         "num_workers": 10,
@@ -15,6 +16,7 @@
     "humaneval_plus" : {
         "task": "HumanEvalPlus",
         "batch_size": 164,
+        "temperature": 0.0,
         "num_samples": 1,
         "num_gpus": 1,
         "num_workers": 10,
@@ -28,6 +30,7 @@
     "mbpp_base" : {
         "task": "MBPPBase",
         "batch_size": 378,
+        "temperature": 0.0,
         "num_samples": 1,
         "num_gpus": 1,
         "num_workers": 10,
@@ -41,6 +44,7 @@
     "mbpp_plus" : {
         "task": "MBPPPlus",
         "batch_size": 378,
+        "temperature": 0.0,
         "num_samples": 1,
         "num_gpus": 1,
         "num_workers": 10,

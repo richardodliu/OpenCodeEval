@@ -28,6 +28,7 @@ def get_args(parser):
     parser.add_argument("--backend", default="vllm", type=str, choices=["vllm", "openai"])
     parser.add_argument("--prompt_type", default="Instruction", type=str, choices=["Completion", "Instruction"])
     parser.add_argument("--model_type", default="Chat", type=str, choices=["Base", "Chat"])
+    parser.add_argument("--k", default=1, type=int)
     parser.add_argument("--time_out", default = 3, type=int)
     
     #===================Computer Parser===================
@@ -56,7 +57,9 @@ def check_args(args):
     if args.model_type == "Base" and args.prompt_type == "Instruction":
         logger.warning("Prompt type must be Completion for Base Model")
 
-    if args.num_samples > 1 and args.temperature != 0.0:
+    if args.k > args.num_samples:
+        logger.error("k must be less than num_samples")
+    if args.num_samples > 1 and args.temperature == 0.0:
         logger.error("Temperature is not allowed when num_samples > 1")
 
     #When eval the chat model, it can not reply to the uncompleted code, so suggest using the Instruction prompt

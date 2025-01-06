@@ -49,9 +49,9 @@ def main():
     write_jsonl(save_path + "/evaluation.jsonl", evaluations)
 
     result_list = group_and_count(evaluations, group_key = 'task_id', count_key = 'passed')
-    pass_rate = float(np.mean(estimate_pass_at_k(num_samples = args.num_samples, num_correct = result_list, k = 1)))
+    pass_rate = float(np.mean(estimate_pass_at_k(num_samples = args.num_samples, num_correct = result_list, k = args.k)))
     write_jsonl(save_path + "/result.json", [{"score": pass_rate}])
-    print("Pass@1:", pass_rate)
+    print(f"Pass@{args.k}:", pass_rate)
 
 if __name__ == "__main__":
     main()
