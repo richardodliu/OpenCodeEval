@@ -40,6 +40,7 @@ def get_args(parser):
     parser.add_argument("--num_samples", default = 1, type=int)
     parser.add_argument("--max_tokens", default = 2048, type=int)
     parser.add_argument("--temperature", default = 0.0, type=float)
+    parser.add_argument("--top_p", default = 1.0, type=float)
 
     parser.add_argument("--prompt_prefix", default = "", type=str)
     parser.add_argument("--prompt_suffix", default = "", type=str)
