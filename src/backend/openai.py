@@ -35,7 +35,7 @@ class OpenaiGenerator(Generator):
 
         self.client = OpenAI(
             base_url = os.getenv("OPENAI_BASE_URL"),
-            api_key=os.getenv("OPENAI_API_KEY")
+            api_key = os.getenv("OPENAI_API_KEY")
         )
 
     def is_chat(self) -> bool:
