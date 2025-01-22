@@ -45,11 +45,39 @@ def multi_process_function(function: Callable,
 
     return results
 
+def markdown_extract(text: str, mode: Literal["first", "last", "all"] = "all") -> str:
+    """
+    Extract content enclosed by triple backticks (```) in a Markdown text.
+
+    Args:
+        text (str): The Markdown text to extract from.
+        mode (Literal["first", "last", "all"]):
+            - "first": Extract the first block of content.
+            - "last": Extract the last block of content.
+            - "all": Extract all blocks of content and join them with double newlines.
+
+    Returns:
+        str: Extracted content based on the specified mode.
+    """
+    # Match content inside triple backticks, ignoring the ``` lines
+    pattern = r"```[ \t]*[\r\n]+[ \t]*(.*?)[ \t]*[\r\n]+[ \t]*```"
+    matches = re.findall(pattern, text, re.DOTALL)
+
+    if matches:
+        if mode == "first":
+            return matches[0]
+        elif mode == "last":
+            return matches[-1]
+        elif mode == "all":
+            return "\n\n".join(matches)
+    else:
+            return ""
+
 def program_extract(text: str,
                     program: str = "python",
                     mode: Literal["first", "last", "all"] = "all") -> str:
 
-    program_pattern = rf"```{program}[ \t]*[\r\n]+(.*?)[ \t]*[\r\n]+```"
+    program_pattern = rf"```{program}[ \t]*[\r\n]+[ \t]*(.*?)[ \t]*[\r\n]+[ \t]*```"
     program_re = re.compile(program_pattern, re.DOTALL | re.IGNORECASE)
 
     matches = program_re.findall(text)

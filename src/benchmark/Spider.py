@@ -6,7 +6,7 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.extend([os.path.dirname(ROOT), os.path.dirname(os.path.dirname(ROOT))])
 
 from benchmark.base import Benchmark
-from utils import refine_text, program_extract
+from utils import refine_text, program_extract, markdown_extract
 from eval.sql_eval import execute_model
 
 class Spider(Benchmark):
@@ -73,13 +73,22 @@ class Spider(Benchmark):
         Postprocess the generations.
         """
 
+        solution = ' '.join(program_extract(
+            text = generation['completion'],
+            program = 'sql', 
+            mode = 'last').splitlines()
+        )
+
+        if solution == "":
+            solution = ' '.join(markdown_extract(
+                text = generation['completion'],
+                mode = 'last').splitlines()
+            )
+
         result = dict(
             task_id = generation['task_id'],
             completion_id = generation['completion_id'],
-            solution = ' '.join(program_extract(
-                text = generation['completion'],
-                program = 'sql', 
-                mode = 'last').splitlines())
+            solution = solution
         )
 
         return result
@@ -96,7 +105,8 @@ class Spider(Benchmark):
         result, passed = execute_model(solution['solution'],
                                        task_data['output'],
                                        db_path,
-                                       self.timeout)
+                                       self.timeout,
+                                       self.name)
         
         return dict(
             task_id = solution['task_id'],

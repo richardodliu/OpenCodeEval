@@ -3,7 +3,7 @@ import sys
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
-from src.benchmark.base import Benchmark, PYTHON_STOP, PYTHON_IMPORTS
+from src.benchmark.base import Benchmark, PYTHON_IMPORTS
 from src.sanitize import sanitize
 from src.utils import refine_text, stream_jsonl
 from src.eval.execution import check_correctness
@@ -24,6 +24,9 @@ class LeetCode(Benchmark):
         self.prompt_type = prompt_type
 
         self.tasks = self.get_task()
+        self.imports = PYTHON_IMPORTS
+
+        self.leetcode_prompt = "\nfrom typing import *\n\nfrom functools import *\nfrom collections import *\nfrom itertools import *\nfrom heapq import *\nfrom bisect import *\nfrom string import *\nfrom operator import *\nfrom math import *\nimport math\nimport datetime\ninf = float('inf')\n"
 
     def get_task(self):
         """
@@ -81,6 +84,7 @@ class LeetCode(Benchmark):
 
         code =  (
                     "\n".join(self.imports) + "\n\n"
+                    + self.leetcode_prompt + "\n\n"
                     + solution['solution'] + "\n\n"
                     + task_data['test']
                 )

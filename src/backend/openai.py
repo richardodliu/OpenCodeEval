@@ -54,6 +54,7 @@ class OpenaiGenerator(Generator):
                 n = self.num_samples,
                 stream = False,
                 temperature = self.temperature,
+                extra_headers = {'apikey':os.getenv("OPENAI_API_KEY")},
             )
             
             results = [

@@ -99,7 +99,8 @@ class Bird(Benchmark):
         result, passed = execute_model(solution['solution'],
                                        task_data['output'],
                                        db_path,
-                                       self.timeout)
+                                       self.timeout,
+                                       self.name)
         
         return dict(
             task_id = solution['task_id'],
