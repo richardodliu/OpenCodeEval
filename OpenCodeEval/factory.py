@@ -1,0 +1,64 @@
+import os
+import sys
+
+from OpenCodeEval.benchmark.HumanEval import HumanEval
+from OpenCodeEval.benchmark.mbpp import mbpp
+from OpenCodeEval.benchmark.MBPP import MBPP
+from OpenCodeEval.benchmark.LeetCode import LeetCode
+from OpenCodeEval.benchmark.BigCodeBench import BigCodeBench
+from OpenCodeEval.benchmark.Bird import Bird
+from OpenCodeEval.benchmark.Spider import Spider
+
+from OpenCodeEval.backend.vllm import VllmGenerator
+from OpenCodeEval.backend.openai import OpenaiGenerator
+
+class BenchmarkFactory:
+    @staticmethod
+    def get_task(args):
+        task_map = {
+            "HumanEval": HumanEval,
+            "mbpp": mbpp,
+            "MBPP": MBPP,
+            "LeetCode": LeetCode,
+            "BigCodeBench": BigCodeBench,
+            "BirdDev": Bird,
+            "SpiderDev": Spider
+        }
+
+        # Check if the task exists in the map
+        if args.task not in task_map:
+            logger.error(f"Unknown Task type: {args.task}")
+
+        # Get the corresponding class
+        task_class = task_map[args.task]
+
+        return task_class(
+            name = args.task,
+            split = args.split,
+            time_out = args.time_out,
+            prompt_type = args.prompt_type
+        )
+
+class BackendFactory:
+    @staticmethod
+    def get_backend(args):
+        if args.backend == "vllm":
+            return VllmGenerator(
+                model_name = args.model_name,
+                model_type = args.model_type,
+                tokenizer_name = args.tokenizer_name,
+                num_gpus = args.num_gpus,
+                batch_size = args.batch_size,
+                temperature = args.temperature,
+                num_samples = args.num_samples,
+                trust_remote_code = args.trust_remote_code,
+                max_tokens = args.max_tokens)
+        elif args.backend == "openai":
+            return OpenaiGenerator(model_name = args.model_name,
+                                   model_type = args.model_type,
+                                   temperature = args.temperature,
+                                   max_tokens = args.max_tokens,
+                                   num_samples = args.num_samples,
+                                   batch_size = args.batch_size)
+        else:
+            raise ValueError("Unknown Backend type")
