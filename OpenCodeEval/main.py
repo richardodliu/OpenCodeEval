@@ -29,15 +29,15 @@ def main():
     write_jsonl(save_path + "/prompts.jsonl", prompts)
 
     # get generations
-    # stop_words = task.chat_stop + task.base_stop if args.model_type == "Base" else task.chat_stop
+    stop_words = task.chat_stop + task.base_stop if args.model_type == "Base" else task.chat_stop
     
-    # decoder = BackendFactory.get_backend(args)
-    # generations = decoder.generate(prompts,
-    #                                stop_words,
-    #                                args.response_prefix,
-    #                                args.response_suffix)
-    # generations = sorted(generations, key = lambda x: (x['task_id'], x['completion_id']))
-    # write_jsonl(save_path + "/generations.jsonl", generations)
+    decoder = BackendFactory.get_backend(args)
+    generations = decoder.generate(prompts,
+                                   stop_words,
+                                   args.response_prefix,
+                                   args.response_suffix)
+    generations = sorted(generations, key = lambda x: (x['task_id'], x['completion_id']))
+    write_jsonl(save_path + "/generations.jsonl", generations)
 
     # post-process generations
     generations = list(stream_jsonl(save_path + "/generations.jsonl"))
