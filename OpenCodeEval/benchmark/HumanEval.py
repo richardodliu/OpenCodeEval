@@ -1,7 +1,6 @@
 import os
-import sys
 
-ROOT = os.path.dirname(os.path.abspath(__file__))
+from typing import Literal
 
 from OpenCodeEval.benchmark.base import Benchmark, PYTHON_STOP, PYTHON_IMPORTS
 from OpenCodeEval.sanitize import sanitize
@@ -14,11 +13,13 @@ class HumanEval(Benchmark):
     chat_stop = PYTHON_STOP
     base_stop = ["\ndef ", "\nclass ", "\nimport ", "\nfrom ", "\nassert "]
 
-    def __init__(self,
-                 name: str = "HumanEval",
-                 split: str = "base",
-                 time_out: float = 3.0,
-                 prompt_type: str = "Completion"):
+    def __init__(
+        self,
+        name: str = "HumanEval",
+        split: Literal["base", "hard"] = "base",
+        time_out: float = 3.0,
+        prompt_type: str = "Completion"
+        ):
 
         super().__init__()
         

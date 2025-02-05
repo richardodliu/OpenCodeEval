@@ -14,9 +14,9 @@ class LeetCode(Benchmark):
 
     def __init__(self,
                  name: str = "LeetCode",
-                 split: str = "contest",
-                 time_out = 3.0,
-                 prompt_type = "Instruction"): 
+                 split: Literal["contest", "train", "validation", "test"] = "contest",
+                 time_out: float = 3.0,
+                 prompt_type: Literal["Completion", "Instruction"] = "Instruction"): 
         super().__init__()
         
         self.name = name

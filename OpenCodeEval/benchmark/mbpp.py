@@ -13,11 +13,14 @@ class mbpp(Benchmark):
     chat_stop = PYTHON_STOP
     base_stop = ['\n"""', "\nassert"]
 
-    def __init__(self,
-                 name:str = "mbpp",
-                 split:str = "full",
-                 time_out:float = 3.0,
-                 prompt_type:str = "Instruction"): 
+    def __init__(
+        self,
+        name: str = "mbpp",
+        split: Literal["full", "sanitized"] = "full",
+        time_out: float = 3.0,
+        prompt_type: str = "Instruction"
+    ):
+
         super().__init__()
         
         self.name = name
