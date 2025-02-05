@@ -33,7 +33,6 @@ class BenchmarkFactory:
         task_class = task_map[args.task]
 
         return task_class(
-            name = args.task,
             split = args.split,
             time_out = args.time_out,
             prompt_type = args.prompt_type

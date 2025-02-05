@@ -1,5 +1,4 @@
 import os
-
 from typing import Literal
 
 from OpenCodeEval.benchmark.base import Benchmark, PYTHON_STOP, PYTHON_IMPORTS
@@ -8,6 +7,8 @@ from OpenCodeEval.utils import refine_text, stream_jsonl, program_extract
 from OpenCodeEval.eval.func_eval import check_correctness
 
 class HumanEval(Benchmark):
+
+    name: str = "HumanEval"
 
     imports_code = PYTHON_IMPORTS
     chat_stop = PYTHON_STOP

@@ -1,5 +1,5 @@
 import os
-import sys
+from typing import Literal
 
 from OpenCodeEval.benchmark.base import Benchmark, PYTHON_IMPORTS, LEETCODE_IMPORTS, PYTHON_STOP
 from OpenCodeEval.sanitize import sanitize
@@ -8,15 +8,20 @@ from OpenCodeEval.eval.func_eval import check_correctness
 
 class LeetCode(Benchmark):
 
+    name: str = "LeetCode"
+
     imports_code = PYTHON_IMPORTS + LEETCODE_IMPORTS
     chat_stop = PYTHON_STOP
     base_stop = ["\ndef ", "\nclass ", "\nimport ", "\nfrom ", "\nassert "]
 
-    def __init__(self,
-                 name: str = "LeetCode",
-                 split: Literal["contest", "train", "validation", "test"] = "contest",
-                 time_out: float = 3.0,
-                 prompt_type: Literal["Completion", "Instruction"] = "Instruction"): 
+    def __init__(
+        self,
+        name: str = "LeetCode",
+        split: Literal["contest", "train", "validation", "test"] = "contest",
+        time_out: float = 3.0,
+        prompt_type: Literal["Completion", "Instruction"] = "Instruction"
+        ):
+
         super().__init__()
         
         self.name = name

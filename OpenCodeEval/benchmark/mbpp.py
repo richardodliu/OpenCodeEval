@@ -5,9 +5,11 @@ from OpenCodeEval.sanitize import sanitize
 from OpenCodeEval.utils import refine_text, stream_jsonl
 from OpenCodeEval.eval.func_eval import check_correctness
 
-from typing import List
+from typing import List, Literal
 
 class mbpp(Benchmark):
+
+    name: str = "mbpp"
 
     imports_code = PYTHON_IMPORTS
     chat_stop = PYTHON_STOP
@@ -19,7 +21,7 @@ class mbpp(Benchmark):
         split: Literal["full", "sanitized"] = "full",
         time_out: float = 3.0,
         prompt_type: str = "Instruction"
-    ):
+        ):
 
         super().__init__()
         
