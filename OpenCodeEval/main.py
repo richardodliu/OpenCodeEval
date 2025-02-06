@@ -47,10 +47,10 @@ def main():
             args.response_suffix
         )
         generations = sorted(generations, key = lambda x: (x['task_id'], x['completion_id']))
-        write_jsonl(save_path + "/generations.jsonl", generations)
+        write_jsonl(os.path.join(save_path, "generations.jsonl"), generations)
 
     # post-process generations
-    generations = list(stream_jsonl(save_path + "/generations.jsonl"))
+    generations = list(stream_jsonl(os.path.join(save_path, "generations.jsonl")))
     solutions = process_map(
         task.postprocess_generation,
         generations,
@@ -59,7 +59,7 @@ def main():
         desc = "Post-processing Generations"
     )
     solutions = sorted(solutions, key = lambda x: (x['task_id'], x['completion_id']))
-    write_jsonl(save_path + "/solutions.jsonl", solutions)
+    write_jsonl(os.path.join(save_path, "solutions.jsonl"), solutions)
 
     # evaluate solutions
     solutions = list(stream_jsonl(save_path + "/solutions.jsonl"))
@@ -71,12 +71,12 @@ def main():
         desc = "Evaluating Solutions"
     )
     evaluations = sorted(evaluations, key = lambda x: (x['task_id'], x['completion_id']))
-    write_jsonl(save_path + "/evaluations.jsonl", evaluations)
+    write_jsonl(os.path.join(save_path, "evaluations.jsonl"), evaluations)
 
     # calculate pass@k
     evaluations = list(stream_jsonl(save_path + "/evaluations.jsonl"))
     results = calculate_pass_at_k(evaluations, args.num_samples, args.list_k)
-    write_jsonl(save_path + "/results.jsonl", results)
+    write_jsonl(os.path.join(save_path + "results.jsonl"), results)
 
 
 if __name__ == "__main__":
