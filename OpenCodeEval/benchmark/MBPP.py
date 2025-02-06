@@ -4,9 +4,9 @@ import sys
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
 from OpenCodeEval.benchmark.base import Benchmark, PYTHON_STOP, PYTHON_IMPORTS
-from OpenCodeEval.sanitize import sanitize
 from OpenCodeEval.utils import refine_text, stream_jsonl, program_extract
 from OpenCodeEval.eval.func_eval import check_correctness
+from OpenCodeEval.eval.sanitize import sanitize
 
 class MBPP(Benchmark):
 
