@@ -50,6 +50,7 @@ def main():
         task.postprocess_generation,
         generations,
         max_workers = args.num_workers,
+        chunksize = 10,
         desc = "Post-processing Generations"
     )
     solutions = sorted(solutions, key = lambda x: (x['task_id'], x['completion_id']))
@@ -61,6 +62,7 @@ def main():
         task.process_results,
         solutions,
         max_workers = args.num_workers,
+        chunksize = 10,
         desc = "Evaluating Solutions"
     )
     evaluations = sorted(evaluations, key = lambda x: (x['task_id'], x['completion_id']))

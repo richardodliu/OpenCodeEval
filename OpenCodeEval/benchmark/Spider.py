@@ -99,7 +99,6 @@ class Spider(Benchmark):
         task_data = self.tasks[solution['task_id']]
 
         db_path = os.path.join(self.database, f"{task_data['db_id']}/{task_data['db_id']}.sqlite")
-        print(db_path)
 
         result, passed = check_correctness(
             solution['solution'],
