@@ -6,7 +6,7 @@ from typing import Literal
 
 from OpenCodeEval.benchmark.base import Benchmark
 from OpenCodeEval.utils import refine_text, program_extract, markdown_extract, stream_jsonl
-from OpenCodeEval.eval.sql_test import execute_sql
+from OpenCodeEval.eval.sql_test import check_correctness
 
 class Spider(Benchmark):
 
@@ -28,8 +28,8 @@ class Spider(Benchmark):
         if self.prompt_type == "Completion":
             logger.error("Completion prompt type not supported for Spider")
 
-        self.path = os.path.join(self.path, f"{self.name}/{self.split}/data.jsonl")
         self.database = os.path.join(self.path, f"{self.name}/{self.split}/database")
+        self.path = os.path.join(self.path, f"{self.name}/{self.split}/data.jsonl")
 
         self.tasks = self.get_task()
 
@@ -98,9 +98,10 @@ class Spider(Benchmark):
 
         task_data = self.tasks[solution['task_id']]
 
-        db_path = self.database + f"/{task_data['db_id']}/{task_data['db_id']}.sqlite"
+        db_path = os.path.join(self.database, f"{task_data['db_id']}/{task_data['db_id']}.sqlite")
+        print(db_path)
 
-        result, passed = execute_sql(
+        result, passed = check_correctness(
             solution['solution'],
             task_data['output'],
             db_path,

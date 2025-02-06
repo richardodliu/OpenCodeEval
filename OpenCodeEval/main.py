@@ -30,19 +30,19 @@ def main():
     # get generations
     # stop_words = task.chat_stop + task.base_stop if args.model_type == "Base" else task.chat_stop
     
-    decoder = BackendFactory.get_backend(args)
-    if decoder.is_chat():
-        decoder.set_stop(task.chat_stop + task.base_stop)
-    else:
-        decoder.set_stop(task.base_stop)
+    # decoder = BackendFactory.get_backend(args)
+    # if decoder.is_chat():
+    #     decoder.set_stop(task.chat_stop + task.base_stop)
+    # else:
+    #     decoder.set_stop(task.base_stop)
 
-    generations = decoder.generate(
-        prompts,
-        args.response_prefix,
-        args.response_suffix
-    )
-    generations = sorted(generations, key = lambda x: (x['task_id'], x['completion_id']))
-    write_jsonl(save_path + "/generations.jsonl", generations)
+    # generations = decoder.generate(
+    #     prompts,
+    #     args.response_prefix,
+    #     args.response_suffix
+    # )
+    # generations = sorted(generations, key = lambda x: (x['task_id'], x['completion_id']))
+    # write_jsonl(save_path + "/generations.jsonl", generations)
 
     # post-process generations
     generations = list(stream_jsonl(save_path + "/generations.jsonl"))

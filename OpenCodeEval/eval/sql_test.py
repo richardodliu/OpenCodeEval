@@ -159,7 +159,7 @@ def execute_sql(predicted_sql,ground_truth, db_path, method):
         logger.error(f"Unknown evaluation method: {method}")
         return "error", False
 
-def execute_sql(predicted_sql,ground_truth, db_path, meta_time_out, method):
+def check_correctness(predicted_sql,ground_truth, db_path, meta_time_out, method):
     try:
         result, passed = func_timeout(
             meta_time_out,
