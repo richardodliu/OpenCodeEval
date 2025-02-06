@@ -25,17 +25,18 @@ def eval_finish(save_path, benchmark_name):
     if benchmark_name not in os.listdir(save_path) or not os.path.isdir(os.path.join(save_path, benchmark_name)):
         logger.info(f"benchmark {benchmark_name} directory has not been created")
         return False
-    if 'result.json' not in os.listdir(os.path.join(save_path, benchmark_name)):
+    if 'result.jsonl' not in os.listdir(os.path.join(save_path, benchmark_name)):
         logger.info(f"benchmark {benchmark_name} result has not been output")
         return False
-    if 'score' not in load_json(os.path.join(save_path, benchmark_name, 'result.json')):
-        logger.info(f"benchmark {benchmark_name} scorehas not been found")
-        return False
+
     return True
 
 def load_result(save_path, benchmark_name):
-    file_name = os.path.join(save_path, benchmark_name, 'result.json')
-    return load_json(file_name)['score']
+    file_name = os.path.join(save_path, benchmark_name, 'result.jsonl')
+    with open(file_name, 'r') as f:
+        result = [json.loads(line.strip()) for line in f]
+
+    return float(list(result[0].values())[0] * 100)
 
 def get_ckpt(ckpt_path):
     return [step for step in os.listdir(ckpt_path) if os.path.isdir(os.path.join(ckpt_path, step)) and not step.startswith('eval')]

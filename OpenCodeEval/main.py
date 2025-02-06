@@ -6,7 +6,7 @@ from OpenCodeEval.utils import refine_text, write_jsonl, stream_jsonl, calculate
 
 from OpenCodeEval.factory import BenchmarkFactory, BackendFactory
 
-from tqdm.contrib.concurrent import process_map
+from tqdm.contrib.concurrent import process_map, thread_map
 
 def main():
 
@@ -63,7 +63,7 @@ def main():
 
     # evaluate solutions
     solutions = list(stream_jsonl(os.path.join(save_path, "solutions.jsonl")))
-    evaluations = process_map(
+    evaluations = thread_map(
         task.process_results,
         solutions,
         max_workers = args.num_workers,
