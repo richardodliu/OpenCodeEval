@@ -32,7 +32,7 @@ def eval_finish(save_path, benchmark_name):
     return True
 
 def load_result(save_path, benchmark_name):
-    file_name = os.path.join(save_path, benchmark_name, 'result.jsonl')
+    file_name = os.path.join(save_path, benchmark_name, 'results.jsonl')
     with open(file_name, 'r') as f:
         result = [json.loads(line.strip()) for line in f]
 
