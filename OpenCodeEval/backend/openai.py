@@ -101,10 +101,3 @@ class OpenaiGenerator(Generator):
         generations = [item for sublist in results for item in sublist]
         
         return generations
-        
-        
-        
-        
-        
-
-        
