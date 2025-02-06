@@ -67,4 +67,4 @@ class BackendFactory:
                 max_tokens = args.max_tokens,
             )
         else:
-            raise ValueError("Unknown Backend type")
+            logger.error(f"Unknown Backend type: {args.backend}")

@@ -1,8 +1,6 @@
 import os
 import argparse
 
-os.environ["TOKENIZERS_PARALLELISM"] = "false"
-
 from OpenCodeEval.args import get_args, check_args
 from OpenCodeEval.utils import refine_text, write_jsonl, stream_jsonl, calculate_pass_at_k
 
