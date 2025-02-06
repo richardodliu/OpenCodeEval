@@ -67,7 +67,7 @@ def main():
         task.process_results,
         solutions,
         max_workers = args.num_workers,
-        chunksize = 10,
+        chunksize = max(10, args.num_workers),
         desc = "Evaluating Solutions"
     )
     evaluations = sorted(evaluations, key = lambda x: (x['task_id'], x['completion_id']))
