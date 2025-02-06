@@ -5,7 +5,7 @@ import traceback
 from typing import Dict, List, Optional, Set, Tuple
 from OpenCodeEval.utils import refine_text
 
-MAX_LINES = 100
+MAX_LINES = 1e9
 
 def syntax_check(code, verbose = False):
     try:

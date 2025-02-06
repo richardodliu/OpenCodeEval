@@ -19,30 +19,35 @@ def main():
 
     task = BenchmarkFactory.get_task(args)
 
-    # get prompts
-    prompts = task.get_prompt()
+    # check if prompts exits
+    if not os.path.exists(save_path + "/prompts.jsonl"):
 
-    for prompt in prompts:
-        prompt['prompt'] = refine_text(args.prompt_prefix + prompt['prompt'] + args.prompt_suffix)
-    prompts = sorted(prompts, key = lambda x: x['task_id'])
-    write_jsonl(save_path + "/prompts.jsonl", prompts)
+        # get prompts
+        prompts = task.get_prompt()
 
-    # get generations
-    # stop_words = task.chat_stop + task.base_stop if args.model_type == "Base" else task.chat_stop
-    
-    decoder = BackendFactory.get_backend(args)
-    if decoder.is_chat():
-        decoder.set_stop(task.chat_stop)
-    else:
-        decoder.set_stop(task.chat_stop + task.base_stop)
+        for prompt in prompts:
+            prompt['prompt'] = refine_text(args.prompt_prefix + prompt['prompt'] + args.prompt_suffix)
+        prompts = sorted(prompts, key = lambda x: x['task_id'])
+        write_jsonl(os.join(save_path + "prompts.jsonl"), prompts)
 
-    generations = decoder.generate(
-        prompts,
-        args.response_prefix,
-        args.response_suffix
-    )
-    generations = sorted(generations, key = lambda x: (x['task_id'], x['completion_id']))
-    write_jsonl(save_path + "/generations.jsonl", generations)
+    prompts = list(stream_jsonl(save_path + "/prompts.jsonl"))
+    # check if generations exits
+    if not os.path.exists(save_path + "/generations.jsonl"):
+
+        # get generations
+        decoder = BackendFactory.get_backend(args)
+        if decoder.is_chat():
+            decoder.set_stop(task.chat_stop)
+        else:
+            decoder.set_stop(task.chat_stop + task.base_stop)
+
+        generations = decoder.generate(
+            prompts,
+            args.response_prefix,
+            args.response_suffix
+        )
+        generations = sorted(generations, key = lambda x: (x['task_id'], x['completion_id']))
+        write_jsonl(save_path + "/generations.jsonl", generations)
 
     # post-process generations
     generations = list(stream_jsonl(save_path + "/generations.jsonl"))
