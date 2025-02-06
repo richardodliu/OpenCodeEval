@@ -15,12 +15,12 @@ def main():
     args = check_args(args)
 
     save_path = args.save_path
-    os.makedirs(save_path, exist_ok=True)
+    os.makedirs(save_path, exist_ok = True)
 
     task = BenchmarkFactory.get_task(args)
 
     # check if prompts exits
-    if not os.path.exists(save_path + "/prompts.jsonl"):
+    if not os.path.exists(os.path.join(save_path, "prompts.jsonl")):
 
         # get prompts
         prompts = task.get_prompt()
@@ -30,9 +30,9 @@ def main():
         prompts = sorted(prompts, key = lambda x: x['task_id'])
         write_jsonl(os.path.join(save_path, "prompts.jsonl"), prompts)
 
-    prompts = list(stream_jsonl(save_path + "/prompts.jsonl"))
+    prompts = list(stream_jsonl(os.path.join(save_path, "prompts.jsonl")))
     # check if generations exits
-    if not os.path.exists(save_path + "/generations.jsonl"):
+    if not os.path.exists(os.path.join(save_path, "generations.jsonl")):
 
         # get generations
         decoder = BackendFactory.get_backend(args)
