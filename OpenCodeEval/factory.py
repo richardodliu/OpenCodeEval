@@ -12,6 +12,7 @@ from OpenCodeEval.backend.vllm import VllmGenerator
 from OpenCodeEval.backend.openai import OpenaiGenerator
 
 class BenchmarkFactory:
+
     @staticmethod
     def get_task(args):
         task_map = {
@@ -38,6 +39,7 @@ class BenchmarkFactory:
         )
 
 class BackendFactory:
+
     @staticmethod
     def get_backend(args):
         if args.backend == "vllm":
