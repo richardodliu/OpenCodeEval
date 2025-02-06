@@ -15,6 +15,7 @@ class OpenaiGenerator(Generator):
             model_type: str = "Instruction",
             batch_size : int = 1,
             temperature : float = 0.0,
+            top_p : float = 1.0,
             max_tokens : int = 1024,
             num_samples : int = 1,
         ) -> None:
@@ -25,6 +26,7 @@ class OpenaiGenerator(Generator):
         self.model_type = model_type
         self.batch_size = batch_size
         self.temperature = temperature
+        self.top_p = top_p
         self.max_tokens = max_tokens
         self.num_samples = num_samples
 
