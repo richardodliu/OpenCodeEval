@@ -3,10 +3,9 @@ from typing import Literal
 from loguru import logger
 
 from OpenCodeEval.benchmark.base import Benchmark, PYTHON_IMPORTS, LEETCODE_IMPORTS, PYTHON_STOP
-from OpenCodeEval.sanitize import sanitize
 from OpenCodeEval.utils import refine_text, stream_jsonl
 from OpenCodeEval.eval.func_eval import check_correctness
-
+from OpenCodeEval.eval.sanitize import sanitize
 class LeetCode(Benchmark):
 
     name: str = "LeetCode"

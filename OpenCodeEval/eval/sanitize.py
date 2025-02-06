@@ -5,6 +5,7 @@ import traceback
 from typing import Dict, List, Optional, Set, Tuple
 from OpenCodeEval.utils import refine_text
 
+MAX_LINES = 100
 
 def syntax_check(code, verbose = False):
     try:
@@ -18,8 +19,8 @@ def syntax_check(code, verbose = False):
 def extract_longest_valid_code(text: str) -> str:
     lines = text.splitlines()
 
-    if len(lines) > 100:
-        lines = lines[:100]
+    if len(lines) > MAX_LINES:
+        lines = lines[:MAX_LINES]
     max_valid_lines = 0
     max_valid_snippet = ""
 

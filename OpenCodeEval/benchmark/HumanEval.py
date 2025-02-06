@@ -2,9 +2,9 @@ import os
 from typing import Literal
 
 from OpenCodeEval.benchmark.base import Benchmark, PYTHON_STOP, PYTHON_IMPORTS
-from OpenCodeEval.sanitize import sanitize
 from OpenCodeEval.utils import refine_text, stream_jsonl, program_extract
 from OpenCodeEval.eval.func_eval import check_correctness
+from OpenCodeEval.eval.sanitize import sanitize
 
 class HumanEval(Benchmark):
 
@@ -93,17 +93,20 @@ class HumanEval(Benchmark):
 
         task_data = self.tasks[solution['task_id']]
 
-        code = ("\n".join(self.imports_code) + "\n"
-                    + task_data["prompt"] + "\n"
-                    + "    pass\n" + "\n"
-                    + solution['solution'] + "\n"
-                    + task_data['test'] + "\n"
-                    + f"check({task_data['entry_point']})"
-                )
-        
-        result = check_correctness(solution['task_id'],
-                                   solution['completion_id'],
-                                   code,
-                                   self.time_out)
+        code = (
+            "\n".join(self.imports_code) + "\n"
+            + task_data["prompt"] + "\n"
+            + "    pass\n" + "\n"
+            + solution['solution'] + "\n"
+            + task_data['test'] + "\n"
+            + f"check({task_data['entry_point']})"
+            )
+
+        result = check_correctness(
+            solution['task_id'],
+            solution['completion_id'],
+            code,
+            self.time_out
+        )
         
         return result
