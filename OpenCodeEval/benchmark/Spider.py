@@ -25,7 +25,7 @@ class Spider(Benchmark):
         self.prompt_type = prompt_type
 
         self.path = os.path.join(self.path, f"{self.name}/{self.split}/data.jsonl")
-        self.database = os.path.join(self.database, f"{self.name}/{self.split}/database")
+        self.database = os.path.join(self.path, f"{self.name}/{self.split}/database")
 
         self.tasks = self.get_task()
 
