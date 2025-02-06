@@ -1,13 +1,7 @@
 import os
-import sys
-
-ROOT = os.path.dirname(os.path.abspath(__file__))
-sys.path.extend([os.path.dirname(ROOT), os.path.dirname(os.path.dirname(ROOT))])
-
 import re
 import gzip
 import json
-import sqlite3
 import itertools
 import numpy as np
 

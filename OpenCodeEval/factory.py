@@ -1,5 +1,4 @@
-import os
-import sys
+from loguru import logger
 
 from OpenCodeEval.benchmark.HumanEval import HumanEval
 from OpenCodeEval.benchmark.mbpp import mbpp
@@ -21,8 +20,8 @@ class BenchmarkFactory:
             "MBPP": MBPP,
             "LeetCode": LeetCode,
             "BigCodeBench": BigCodeBench,
-            "BirdDev": Bird,
-            "SpiderDev": Spider
+            "Bird": Bird,
+            "Spider": Spider
         }
 
         # Check if the task exists in the map

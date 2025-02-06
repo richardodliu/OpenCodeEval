@@ -1,8 +1,4 @@
 import os
-import sys
-
-ROOT = os.path.dirname(os.path.abspath(__file__))
-sys.path.extend([os.path.dirname(ROOT), os.path.dirname(os.path.dirname(ROOT))])
 
 from typing import List
 from openai import OpenAI
@@ -78,12 +74,13 @@ class OpenaiGenerator(Generator):
             ]
             
         return results
-    def generate(self,
-                 prompt_set: List[Dict],
-                 eos: List[str] = None,
-                 response_prefix: str = "",
-                 response_suffix: str = ""
-                ) -> List[Dict]:
+    def generate(
+        self,
+        prompt_set: List[Dict],
+        eos: List[str] = None,
+        response_prefix: str = "",
+        response_suffix: str = ""
+    ) -> List[Dict]:
         
         logger.info("Example Prompt:\n{}", prompt_set[0]['prompt'])
         

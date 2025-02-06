@@ -24,6 +24,13 @@ class Generator(ABC):
         pass
 
     @abstractmethod
+    def set_stop(self):
+        """
+        Set the stop tokens for the model
+        """
+        pass
+
+    @abstractmethod
     def generate(self):
         """Builds the prompt for the LM to generate from.
         :param doc: dict[str: str]

@@ -5,7 +5,7 @@ from loguru import logger
 from typing import Literal
 
 from OpenCodeEval.benchmark.base import Benchmark
-from OpenCodeEval.utils import refine_text, program_extract, markdown_extract
+from OpenCodeEval.utils import refine_text, program_extract, markdown_extract, stream_jsonl
 from OpenCodeEval.eval.sql_test import execute_sql
 
 class Spider(Benchmark):
@@ -38,13 +38,12 @@ class Spider(Benchmark):
         Get the task data from the json file into a dictionary.
         """
 
-        with open(self.path) as f:
-            task_set =  json.load(f)
-
         tasks = {}
-        for task_data in task_set:
+        
+        for task_data in stream_jsonl(filename = self.path):
+
             tasks[int(task_data['id'])] = task_data
-            
+        
         return tasks
 
     def get_prompt(self):
