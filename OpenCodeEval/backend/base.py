@@ -1,10 +1,26 @@
-import os
-import sys
-
-ROOT = os.path.dirname(os.path.abspath(__file__))
-sys.path.extend([os.path.dirname(ROOT), os.path.dirname(os.path.dirname(ROOT))])
-
+from typing import Callable
 from abc import ABC, abstractmethod
+
+def make_chat_template(
+        prompt: str,
+        response_prefix: str = "",
+        is_chat: bool = False,
+        tokenizer: Callable = None
+    ) -> str:
+
+    if is_chat:
+        prompt = tokenizer.apply_chat_template(
+            [
+                {"role": "user", "content":  prompt},
+            ],
+            tokenize = False,
+            add_generation_prompt = True
+        ) + response_prefix
+        if tokenizer.bos_token and prompt.startswith(tokenizer.bos_token):
+            prompt = prompt[len(tokenizer.bos_token):]
+        return prompt
+    else:
+        return prompt
 
 class Generator(ABC):
 
