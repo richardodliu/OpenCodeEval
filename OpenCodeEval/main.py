@@ -28,7 +28,7 @@ def main():
         for prompt in prompts:
             prompt['prompt'] = refine_text(args.prompt_prefix + prompt['prompt'] + args.prompt_suffix)
         prompts = sorted(prompts, key = lambda x: x['task_id'])
-        write_jsonl(os.join(save_path + "prompts.jsonl"), prompts)
+        write_jsonl(os.path.join(save_path, "prompts.jsonl"), prompts)
 
     prompts = list(stream_jsonl(save_path + "/prompts.jsonl"))
     # check if generations exits
