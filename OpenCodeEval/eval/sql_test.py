@@ -8,7 +8,6 @@ from collections import defaultdict
 from typing import Tuple, List, Set
 from func_timeout import func_timeout, FunctionTimedOut
 
-
 def permute_tuple(element: Tuple, perm: Tuple) -> Tuple:
     assert len(element) == len(perm)
     return tuple([element[i] for i in perm])
@@ -30,7 +29,6 @@ def quick_rej(result1: List[Tuple], result2: List[Tuple], order_matters: bool) -
     else:
         return set(s1) == set(s2)
 
-
 # return whether two bag of relations are equivalent
 def multiset_eq(l1: List, l2: List) -> bool:
     if len(l1) != len(l2):
@@ -43,7 +41,6 @@ def multiset_eq(l1: List, l2: List) -> bool:
         if d[e] < 0:
             return False
     return True
-
 
 def get_constraint_permutation(tab1_sets_by_columns: List[Set], result2: List[Tuple]):
     num_cols = len(result2[0])
@@ -60,7 +57,6 @@ def get_constraint_permutation(tab1_sets_by_columns: List[Set], result2: List[Tu
                 if random_tab2_row[tab2_col] not in tab1_sets_by_columns[tab1_col]:
                     perm_constraints[tab1_col].remove(tab2_col)
     return product(*perm_constraints)
-
 
 # check whether two denotations are correct
 def result_eq(result1: List[Tuple], result2: List[Tuple], order_matters: bool) -> bool:
@@ -110,14 +106,27 @@ def result_eq(result1: List[Tuple], result2: List[Tuple], order_matters: bool) -
                 return True
     return False
 
-
 # postprocess the model predictions to avoid execution errors
 # e.g. removing spaces between ">" and "="
 def postprocess(query: str) -> str:
     query = query.replace("> =", ">=").replace("< =", "<=").replace("! =", "!=")
     return query
 
-def execute_sql(predicted_sql,ground_truth, db_path, name):
+def find_detail(reason):
+    patterns = [
+        "ambiguous column name",
+        "no such column",
+        "no such table",
+        "no such function",
+        "syntax error",
+    ]
+
+    for p in patterns:
+        if p in reason:
+            return p
+    return "others"
+
+def execute_sql(predicted_sql,ground_truth, db_path, method):
     conn = sqlite3.connect(db_path)
     # Connect to the database
     cursor = conn.cursor()
@@ -128,14 +137,14 @@ def execute_sql(predicted_sql,ground_truth, db_path, name):
     result = "failed"
     passed = False
 
-    if "bird" in name.lower():
+    if method == "set_match":
 
         if set(predicted_res) == set(ground_truth_res):
             result = "passed"
             passed = True
         return result, passed
 
-    elif "spider" in name.lower():
+    elif method == "exact_match":
 
         order_matters = "orderby" in re.sub(r"\s+", ground_truth.lower(), "")
         if result_eq(predicted_res, ground_truth_res, order_matters=order_matters):
@@ -147,13 +156,21 @@ def execute_sql(predicted_sql,ground_truth, db_path, name):
         return result, passed
 
     else:
-        logger.error(f"Unknown benchmark: {name}")
+        logger.error(f"Unknown evaluation method: {method}")
         return "error", False
 
-def execute_model(predicted_sql,ground_truth, db_place, meta_time_out, name):
+def execute_sql(predicted_sql,ground_truth, db_path, meta_time_out, method):
     try:
-        result, passed = func_timeout(meta_time_out, execute_sql,
-                                  args=(predicted_sql, ground_truth, db_place, name))
+        result, passed = func_timeout(
+            meta_time_out,
+            execute_sql,
+            args = (
+                predicted_sql,
+                ground_truth,
+                db_path,
+                method
+                )
+            )
     except FunctionTimedOut:
         result = "timeout"
         passed = False

@@ -7,7 +7,7 @@ sys.path.extend([os.path.dirname(ROOT), os.path.dirname(os.path.dirname(ROOT))])
 
 from benchmark.base import Benchmark
 from utils import refine_text, program_extract, markdown_extract
-from eval.sql_eval import execute_model
+from github.OpenCodeEval.OpenCodeEval.eval.sql_test import execute_sql
 
 class Spider(Benchmark):
 
@@ -102,11 +102,13 @@ class Spider(Benchmark):
 
         db_path = self.database + f"/{task_data['db_id']}/{task_data['db_id']}.sqlite"
 
-        result, passed = execute_model(solution['solution'],
-                                       task_data['output'],
-                                       db_path,
-                                       self.timeout,
-                                       self.name)
+        result, passed = execute_sql(
+            solution['solution'],
+            task_data['output'],
+            db_path,
+            self.timeout,
+            "exact_match"
+        )
         
         return dict(
             task_id = solution['task_id'],
