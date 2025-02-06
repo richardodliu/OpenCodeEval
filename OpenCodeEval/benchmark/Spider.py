@@ -1,36 +1,31 @@
 import os
-import sys
 import json
 
-ROOT = os.path.dirname(os.path.abspath(__file__))
-sys.path.extend([os.path.dirname(ROOT), os.path.dirname(os.path.dirname(ROOT))])
+from typing import Literal
 
-from benchmark.base import Benchmark
-from utils import refine_text, program_extract, markdown_extract
-from github.OpenCodeEval.OpenCodeEval.eval.sql_test import execute_sql
+from OpenCodeEval.benchmark.base import Benchmark
+from OpenCodeEval.utils import refine_text, program_extract, markdown_extract
+from OpenCodeEval.eval.sql_test import execute_sql
 
 class Spider(Benchmark):
 
     name: str = "Spider"
-    path: str = None
-    database: str = None
-    
-    dev_path = os.path.abspath(os.path.join(ROOT, "../data/spider-dev/spider-dev.json"))
-    dev_database = os.path.abspath(os.path.join(ROOT, "../data/spider-dev/database"))
 
-    def __init__(self,
-                 name: str = "SpiderDev",
-                 timeout: float = 3.0,
-                 prompt_type: str = "Instruction"): 
+    def __init__(
+        self,
+        split: Literal["train", "dev"] = "dev",
+        timeout: float = 3.0,
+        prompt_type: str = "Instruction"
+    ):
+    
         super().__init__()
         
-        self.name = name
+        self.split = split
         self.timeout = timeout
         self.prompt_type = prompt_type
 
-        if self.name == "SpiderDev":
-            self.path = self.dev_path
-            self.database = self.dev_database
+        self.path = os.path.join(self.path, f"{self.name}/{self.split}/data.jsonl")
+        self.database = os.path.join(self.database, f"{self.name}/{self.split}/database")
 
         self.tasks = self.get_task()
 

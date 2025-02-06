@@ -1,5 +1,6 @@
 import os
 from typing import Literal
+from loguru import logger
 
 from OpenCodeEval.benchmark.base import Benchmark, PYTHON_IMPORTS, LEETCODE_IMPORTS, PYTHON_STOP
 from OpenCodeEval.sanitize import sanitize

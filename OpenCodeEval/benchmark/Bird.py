@@ -1,39 +1,31 @@
 import os
 import sys
-import json
 
-ROOT = os.path.dirname(os.path.abspath(__file__))
-sys.path.extend([os.path.dirname(ROOT), os.path.dirname(os.path.dirname(ROOT))])
+from typing import Literal
 
 from OpenCodeEval.benchmark.base import Benchmark
-from OpenCodeEval.utils import refine_text, program_extract
-from github.OpenCodeEval.OpenCodeEval.eval.sql_test import execute_model
+from OpenCodeEval.utils import refine_text, program_extract, stream_jsonl
+from OpenCodeEval.eval.sql_test import execute_sql
 
 class Bird(Benchmark):
 
     name: str = "Bird"
-    path: str = None
-    database: str = None
+
+    def __init__(
+        self,
+        split: Literal["train", "dev"] = "dev",
+        timeout: float = 30.0,
+        prompt_type: str = "Instruction"
+    ):
     
-    dev_path = os.path.abspath(os.path.join(ROOT, "../data/bird-dev/bird-dev.json"))
-    dev_database = os.path.abspath(os.path.join(ROOT, "../data/bird-dev/database"))
-
-    chat_stop = []
-    base_stop = []
-
-    def __init__(self,
-                 name: str = "BirdDev",
-                 timeout: float = 3.0,
-                 prompt_type: str = "Instruction"): 
         super().__init__()
         
-        self.name = name
+        self.split = split
         self.timeout = timeout
         self.prompt_type = prompt_type
 
-        if self.name == "BirdDev":
-            self.path = self.dev_path
-            self.database = self.dev_database
+        self.path = os.path.join(self.path, f"{self.name}/{self.split}/data.jsonl")
+        self.database = os.path.join(self.database, f"{self.name}/{self.split}/database")
 
         self.tasks = self.get_task()
         
@@ -41,14 +33,13 @@ class Bird(Benchmark):
         """
         Get the task data from the json file into a dictionary.
         """
-
-        with open(self.path) as f:
-            task_set =  json.load(f)
-
+    
         tasks = {}
-        for task_data in task_set:
+        
+        for task_data in stream_jsonl(filename = self.path):
+
             tasks[int(task_data['id'])] = task_data
-            
+        
         return tasks
 
     def get_prompt(self):
