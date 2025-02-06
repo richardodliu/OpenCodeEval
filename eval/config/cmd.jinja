@@ -1,17 +1,17 @@
-python ../src/main.py \
-    --model_name {{ model_name }} \
-    --save_path {{ save_path }} \
-    --task {{ task }} \
-    --batch_size {{ batch_size }} \
-    --temperature {{ temperature }} \
-    --num_samples {{ num_samples }} \
-    --k {{ k }} \
-    --num_gpus {{ num_gpus }} \
-    --num_workers {{ num_workers }} \
-    --max_tokens {{ max_tokens }} \
-    --time_out {{ time_out }} \
-    --prompt_type {{ prompt_type }} \
-    --model_type {{ model_type }} \
-    --prompt_prefix '{{ prompt_prefix }}' \
-    --prompt_suffix '{{ prompt_suffix }}' \
-    --trust_remote_code
+OpenCodeEval    --model_name {{ model_name }} \
+                --save_path {{ save_path }} \
+                --task {{ task }} \
+                --split {{ split }} \
+                --batch_size {{ batch_size }} \
+                --temperature {{ temperature }} \
+                --num_samples {{ num_samples }} \
+                --list_k {{ list_k }} \
+                --num_gpus {{ num_gpus }} \
+                --num_workers {{ num_workers }} \
+                --max_tokens {{ max_tokens }} \
+                --time_out {{ time_out }} \
+                --prompt_type {{ prompt_type }} \
+                --model_type {{ model_type }} \
+                --prompt_prefix '{{ prompt_prefix }}' \
+                --prompt_suffix '{{ prompt_suffix }}' \
+                --trust_remote_code
