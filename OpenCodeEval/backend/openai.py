@@ -1,24 +1,24 @@
 import os
 
-from typing import List
+from typing import List, Dict
 from openai import OpenAI
-from typing import Dict
 from loguru import logger
+from tqdm.contrib.concurrent import thread_map
 
-from backend.base import Generator
-
-from utils import multi_process_function
+from OpenCodeEval.backend.base import Generator
 
 class OpenaiGenerator(Generator):
-    def __init__(self,
-                 model_name: str,
-                 model_type: str = "Instruction",
-                 batch_size : int = 1,
-                 temperature : float = 0.0,
-                 max_tokens : int = 1024,
-                 num_samples : int = 1,
-                 eos: List[str] = None
-                ) -> None:
+
+    def __init__(
+            self,
+            model_name: str,
+            model_type: str = "Instruction",
+            batch_size : int = 1,
+            temperature : float = 0.0,
+            max_tokens : int = 1024,
+            num_samples : int = 1,
+        ) -> None:
+
         super().__init__(model_name)
 
         print("Initializing a decoder model: {} ...".format(model_name))
@@ -27,7 +27,6 @@ class OpenaiGenerator(Generator):
         self.temperature = temperature
         self.max_tokens = max_tokens
         self.num_samples = num_samples
-        self.eos = eos
 
         self.client = OpenAI(
             base_url = os.getenv("OPENAI_BASE_URL"),
@@ -39,6 +38,9 @@ class OpenaiGenerator(Generator):
             return True
         else:
             return False
+    
+    def set_stop(self, eos: List[str]):
+        self.eos = eos
 
     def connect_server(self, prompt):
         try:
@@ -49,6 +51,7 @@ class OpenaiGenerator(Generator):
                 ], 
                 n = self.num_samples,
                 stream = False,
+                stop = self.eos,
                 temperature = self.temperature,
                 extra_headers = {'apikey':os.getenv("OPENAI_API_KEY")},
             )
@@ -77,22 +80,23 @@ class OpenaiGenerator(Generator):
     def generate(
         self,
         prompt_set: List[Dict],
-        eos: List[str] = None,
         response_prefix: str = "",
         response_suffix: str = ""
     ) -> List[Dict]:
         
         logger.info("Example Prompt:\n{}", prompt_set[0]['prompt'])
         
-        results = multi_process_function(self.connect_server, 
-                                        prompt_set,
-                                        num_workers=self.batch_size,
-                                        desc="Generating")
+        results = thread_map(
+            self.connect_server, 
+            prompt_set,
+            max_workers = self.batch_size,
+            desc="Generating Completions"
+        )
         
 
-        flattened_results = [item for sublist in results for item in sublist]
+        generations = [item for sublist in results for item in sublist]
         
-        return flattened_results
+        return generations
         
         
         
