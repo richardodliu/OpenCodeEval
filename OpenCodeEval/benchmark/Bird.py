@@ -1,6 +1,7 @@
 import os
 import sys
 
+from loguru import logger
 from typing import Literal
 
 from OpenCodeEval.benchmark.base import Benchmark
@@ -14,15 +15,18 @@ class Bird(Benchmark):
     def __init__(
         self,
         split: Literal["train", "dev"] = "dev",
-        timeout: float = 30.0,
+        time_out: float = 30.0,
         prompt_type: str = "Instruction"
     ):
     
         super().__init__()
         
         self.split = split
-        self.timeout = timeout
+        self.time_out = time_out
         self.prompt_type = prompt_type
+
+        if self.prompt_type == "Completion":
+            logger.error("Completion prompt type not supported for Bird")
 
         self.path = os.path.join(self.path, f"{self.name}/{self.split}/data.jsonl")
         self.database = os.path.join(self.path, f"{self.name}/{self.split}/database")
@@ -91,7 +95,7 @@ class Bird(Benchmark):
             solution['solution'],
             task_data['output'],
             db_path,
-            self.timeout,
+            self.time_out,
             "set_match"
         )
         
