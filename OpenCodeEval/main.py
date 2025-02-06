@@ -55,28 +55,28 @@ def main():
         task.postprocess_generation,
         generations,
         max_workers = args.num_workers,
-        chunksize = max(10, args.num_workers * 10),
+        chunksize = 1,
         desc = "Post-processing Generations"
     )
     solutions = sorted(solutions, key = lambda x: (x['task_id'], x['completion_id']))
     write_jsonl(os.path.join(save_path, "solutions.jsonl"), solutions)
 
     # evaluate solutions
-    solutions = list(stream_jsonl(save_path + "/solutions.jsonl"))
+    solutions = list(stream_jsonl(os.path.join(save_path, "solutions.jsonl")))
     evaluations = process_map(
         task.process_results,
         solutions,
         max_workers = args.num_workers,
-        chunksize = max(10, args.num_workers * 10),
+        chunksize = 1,
         desc = "Evaluating Solutions"
     )
     evaluations = sorted(evaluations, key = lambda x: (x['task_id'], x['completion_id']))
     write_jsonl(os.path.join(save_path, "evaluations.jsonl"), evaluations)
 
     # calculate pass@k
-    evaluations = list(stream_jsonl(save_path + "/evaluations.jsonl"))
+    evaluations = list(stream_jsonl(os.path.join(save_path, "evaluations.jsonl")))
     results = calculate_pass_at_k(evaluations, args.num_samples, args.list_k)
-    write_jsonl(os.path.join(save_path + "results.jsonl"), results)
+    write_jsonl(os.path.join(save_path, "results.jsonl"), results)
 
 
 if __name__ == "__main__":
