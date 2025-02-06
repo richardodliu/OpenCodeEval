@@ -35,8 +35,10 @@ def check_args(args):
         logger.error(f"split {args.split} is not valid for {args.task}, please use {SPLITS[args.task]}")
 
     # check the list_k is valid
+    args.list_k = list(map(int, args.list_k.split(',')))
     if max(args.list_k) > args.num_samples:
-        logger.error("max of list_k must be less than num_samples")
+        logger.warning("max of list_k must be less than num_samples")
+        args.list_k = [k for k in args.list_k if k <= args.num_samples]
 
     # check the temperature is valid
     if args.num_samples > 1 and args.temperature == 0.0:
@@ -63,8 +65,8 @@ def get_args(parser):
     parser.add_argument("--task", default="HumanEval", type=str, choices = BENCHMARKS)
     parser.add_argument("--split", default="base", type = str)
     parser.add_argument("--prompt_type", default = "Instruction", type=str, choices=["Completion", "Instruction"])
-    parser.add_argument("--model_type", default = "Chat", type=str, choices=["Base", "Chat"])
-    parser.add_argument("--list_k", default=[1], type=lambda x: list(map(int, x.split(','))))
+    parser.add_argument("--model_type", default = "Chat", type = str, choices=["Base", "Chat"])
+    parser.add_argument("--list_k", default = "1,3,5,10", type = str)
     parser.add_argument("--time_out", default = 3, type = float)
     
     #===================Computer Parser===================
