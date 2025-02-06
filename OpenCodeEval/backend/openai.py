@@ -55,6 +55,8 @@ class OpenaiGenerator(Generator):
                 stream = False,
                 stop = self.eos,
                 temperature = self.temperature,
+                top_p = self.top_p,
+                max_tokens = self.max_tokens,
                 extra_headers = {'apikey':os.getenv("OPENAI_API_KEY")},
             )
             
@@ -73,7 +75,7 @@ class OpenaiGenerator(Generator):
                 dict(
                     task_id=prompt['task_id'],
                     completion_id=i,
-                    completion='error:{}'.format(e)
+                    completion='Error:{}'.format(e)
                 )
                 for i in range(self.num_samples)
             ]
