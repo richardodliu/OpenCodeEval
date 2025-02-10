@@ -113,16 +113,18 @@ class SglangGenerator(Generator):
                 self.sampling_params
             )
 
+            batch_outputs = [[item["text"] for item in batch_outputs[i:i + self.num_samples]] for i in range(0, len(batch_outputs), self.num_samples)]
+
             for prompt, output in zip(batch_prompt, batch_outputs):
 
                 # Process completions with prefix/suffix and refine text based on chat mode
                 completions = [
                     refine_text(
-                        f"{prompt['prompt']}\n\n{response_prefix}{completion.text}{response_suffix}"
+                        f"{prompt['prompt']}\n\n{response_prefix}{completion}{response_suffix}"
                         if not self.is_chat()
-                        else f"{response_prefix}{completion.text}{response_suffix}"
+                        else f"{response_prefix}{completion}{response_suffix}"
                     )
-                    for completion in output.outputs
+                    for completion in output
                 ]
 
                 for completion_id, completion in enumerate(completions):
