@@ -46,7 +46,7 @@ class SglangGenerator(Generator):
             model_path = self.model_name,
             tokenizer_path = self.tokenizer_name,
             dtype = self.dtype,
-            tp = self.num_gpus,
+            tp_size = self.num_gpus,
             trust_remote_code = self.trust_remote_code
         )
 
