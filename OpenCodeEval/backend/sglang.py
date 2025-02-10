@@ -46,7 +46,7 @@ class SglangGenerator(Generator):
             model_path = self.model_name,
             tokenizer_path = self.tokenizer_name,
             dtype = self.dtype,
-            tp_size = self.num_gpus,
+            tp = self.num_gpus,
             trust_remote_code = self.trust_remote_code
         )
 
@@ -79,9 +79,11 @@ class SglangGenerator(Generator):
 
         from sglang.srt.distributed.parallel_state import destroy_distributed_environment, destroy_model_parallel
 
+        self.model.shutdown()
+
         destroy_model_parallel
         destroy_distributed_environment()
-        del self.model.llm_engine.model_executor
+
         del self.model
         gc.collect()
         torch.cuda.empty_cache()
@@ -107,13 +109,17 @@ class SglangGenerator(Generator):
         generation_set = []
 
         for batch_start in tqdm(range(0, len(prompt_set), self.batch_size)):
+
             batch_prompt = prompt_set[batch_start : batch_start + self.batch_size]
             batch_outputs = self.model.generate(
                 [prompt['prompt'] for prompt in batch_prompt],
                 self.sampling_params
             )
 
-            batch_outputs = [[item["text"] for item in batch_outputs[i:i + self.num_samples]] for i in range(0, len(batch_outputs), self.num_samples)]
+            batch_outputs = [
+                [item["text"] for item in batch_outputs[i:i + self.num_samples]]
+                for i in range(0, len(batch_outputs), self.num_samples)
+            ]
 
             for prompt, output in zip(batch_prompt, batch_outputs):
 

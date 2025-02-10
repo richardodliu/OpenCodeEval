@@ -61,11 +61,14 @@ class BackendFactory:
             return SglangGenerator(
                 model_name = args.model_name,
                 model_type = args.model_type,
+                tokenizer_name = args.tokenizer_name,
+                num_gpus = args.num_gpus,
                 batch_size = args.batch_size,
                 temperature = args.temperature,
                 top_p = args.top_p,
                 num_samples = args.num_samples,
                 max_tokens = args.max_tokens,
+                trust_remote_code = args.trust_remote_code,
             )
 
         elif args.backend == "openai":
