@@ -13,9 +13,14 @@ dependencies = [
     "torch",
     "transformers",
     "datasets",
-    "vllm",
-    "openai"
+    "openai",
+    "func_timeout",
 ]
+
+optional-dependencies = {
+    "vllm" = ["vllm"],
+    "sglang" = ["sglang"],
+}
 
 [tool.setuptools.packages.find]
 where = ["."]

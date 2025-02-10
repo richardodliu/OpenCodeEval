@@ -1,118 +1,128 @@
 import os
-import sys
 
-ROOT = os.path.dirname(os.path.abspath(__file__))
-sys.path.extend([os.path.dirname(ROOT), os.path.dirname(os.path.dirname(ROOT))])
-
-import gc
-import torch
 from loguru import logger
+
 from tqdm import tqdm
 from typing import List, Dict
-from backend.base import Generator
-from utils import refine_text
+
+from OpenCodeEval.backend.base import Generator, make_chat_template
+
+from OpenCodeEval.utils import refine_text
 
 class SglangGenerator(Generator):
-    def __init__(self,
-                 model_name: str, 
-                 tokenizer_name: str = None,
-                 model_type: str = "Instruction",
-                 dtype: str = "bfloat16",
-                 batch_size: int = 1,
-                 temperature: float = 0.0,
-                 max_tokens: int = 1024,
-                 num_samples: int = 200,
-                 num_gpus: int = 1,
-                 trust_remote_code: bool = True
-                ) -> None:
-        
-        import sglang as sgl
+
+    def __init__(
+        self,
+        model_name: str,
+        tokenizer_name: str = None,
+        model_type: str = "Instruction",
+        dtype: str = "bfloat16",
+        batch_size : int = 1,
+        temperature : float = 0.0,
+        top_p : float = 1.0,
+        max_tokens : int = 1024,
+        num_samples: int = 200,
+        num_gpus: int = 1,
+        trust_remote_code: bool = True,
+    ) -> None:
 
         super().__init__(model_name)
-        
-        print(f"Initializing a decoder model: {model_name} ...")
-        self.tokenizer_name = tokenizer_name if tokenizer_name else model_name
+
+        print("Initializing a decoder model in sglang: {} ...".format(model_name))
+        self.tokenizer_name = tokenizer_name if tokenizer_name is not None else model_name
         self.model_type = model_type
         self.batch_size = batch_size
         self.temperature = temperature
+        self.top_p = top_p
         self.max_tokens = max_tokens
         self.num_samples = num_samples
         self.dtype = dtype
         self.num_gpus = num_gpus
         self.trust_remote_code = trust_remote_code
 
-        # 初始化sglang模型
-        self.model = sgl.Engine(
-            model_name=self.model_name,
-            tensor_parallel_size=self.num_gpus
+        from sglang import Engine
+
+        self.model = Engine(
+            model_path = self.model_name,
+            tokenizer_path = self.tokenizer_name,
+            dtype = self.dtype,
+            tp_size = self.num_gpus,
+            trust_remote_code = self.trust_remote_code
         )
-        self.tokenizer = self.model.get_tokenizer()
 
-    def make_chat_template(self, prompt: str, response_prefix: str = "") -> str:
-        if self.is_chat():
-            prompt = self.tokenizer.apply_chat_template(
-                [{"role": "user", "content": prompt}],
-                tokenize=False,
-                add_generation_prompt=True
-            ) + response_prefix
-            if self.tokenizer.bos_token and prompt.startswith(self.tokenizer.bos_token):
-                prompt = prompt[len(self.tokenizer.bos_token):]
-            return prompt
-        else:
-            return '''You are a helpful programming assistant.
-### Instruction:
-{}
-### Response:
-'''.format(prompt.strip()).lstrip() + response_prefix
+        self.tokenizer = self.model.tokenizer_manager.tokenizer
+        os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
+        self.sampling_params = dict(
+            n = self.num_samples,
+            temperature = self.temperature,
+            max_new_tokens = self.max_tokens,
+            top_p = self.top_p,
+        )
+    
     def is_chat(self) -> bool:
         if self.model_type == "Chat":
-            assert self.model.get_tokenizer().chat_template is not None
-            return True
-        return False
-
+            if self.tokenizer.chat_template is None:
+                logger.error("When the model type is Chat, the chat template must be set for the tokenizer.")
+            else:
+                return True
+        else:
+            return False
+        
+    def set_stop(self, eos: List[str]):
+        self.sampling_params['stop'] = eos
+        
     def release_memory(self):
+
+        import gc
+        import torch
+
+        from sglang.srt.distributed.parallel_state import destroy_distributed_environment, destroy_model_parallel
+
+        destroy_model_parallel
+        destroy_distributed_environment()
+        del self.model.llm_engine.model_executor
         del self.model
         gc.collect()
         torch.cuda.empty_cache()
 
-    def generate(self,
-                prompt_set: List[Dict],
-                eos: List[str] = None,
-                response_prefix: str = "",
-                response_suffix: str = ""
-               ) -> List[str]:
-        
+    def generate(
+            self,
+            prompt_set: List[Dict],
+            response_prefix: str = "",
+            response_suffix: str = ""
+        ) -> List[str]:
+
         if self.is_chat():
             for prompt in prompt_set:
-                prompt['prompt'] = self.make_chat_template(prompt['prompt'])
+                prompt['prompt'] = make_chat_template(
+                    prompt = prompt['prompt'],
+                    response_prefix = response_prefix,
+                    is_chat = self.is_chat(),
+                    tokenizer = self.tokenizer
+                )
 
-        logger.info("示例提示:\n{}", prompt_set[0]['prompt'])
+        logger.info("Example Prompt:\n{}", prompt_set[0]['prompt'])
 
         generation_set = []
 
         for batch_start in tqdm(range(0, len(prompt_set), self.batch_size)):
             batch_prompt = prompt_set[batch_start : batch_start + self.batch_size]
-            
-            # 使用sglang的生成API
-            batch_outputs = []
-            for prompt in batch_prompt:
-                state = self.model.create_state()
-                state.llm(prompt['prompt'], 
-                         temperature=self.temperature,
-                         max_tokens=self.max_tokens,
-                         num_return_sequences=self.num_samples,
-                         stop=eos)
-                batch_outputs.append(state.get_outputs())
+            batch_outputs = self.model.generate(
+                [prompt['prompt'] for prompt in batch_prompt],
+                self.sampling_params
+            )
 
-            for prompt, outputs in zip(batch_prompt, batch_outputs):
+            for prompt, output in zip(batch_prompt, batch_outputs):
+
+                # Process completions with prefix/suffix and refine text based on chat mode
                 completions = [
                     refine_text(
-                        f"{prompt['prompt']}\n\n{response_prefix}{output}{response_suffix}"
+                        f"{prompt['prompt']}\n\n{response_prefix}{completion.text}{response_suffix}"
                         if not self.is_chat()
-                        else f"{response_prefix}{output}{response_suffix}"
+                        else f"{response_prefix}{completion.text}{response_suffix}"
                     )
-                    for output in outputs
+                    for completion in output.outputs
                 ]
 
                 for completion_id, completion in enumerate(completions):
@@ -122,7 +132,8 @@ class SglangGenerator(Generator):
                         'completion': completion
                     })
 
-        assert len(generation_set) == len(prompt_set) * self.num_samples, "生成数量与预期不符"
+        if len(generation_set) != len(prompt_set) * self.num_samples:
+            logger.error("Number of generations does not match the expected number.")
 
         self.release_memory()
 

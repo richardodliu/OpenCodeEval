@@ -22,7 +22,7 @@ class OpenaiGenerator(Generator):
 
         super().__init__(model_name)
 
-        print("Initializing a decoder model: {} ...".format(model_name))
+        print("Initializing a decoder model in openai: {} ...".format(model_name))
         self.model_type = model_type
         self.batch_size = batch_size
         self.temperature = temperature

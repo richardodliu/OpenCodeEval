@@ -9,6 +9,7 @@ from OpenCodeEval.benchmark.Bird import Bird
 from OpenCodeEval.benchmark.Spider import Spider
 
 from OpenCodeEval.backend.vllm import VllmGenerator
+from OpenCodeEval.backend.sglang import SglangGenerator
 from OpenCodeEval.backend.openai import OpenaiGenerator
 
 class BenchmarkFactory:
@@ -55,7 +56,18 @@ class BackendFactory:
                 max_tokens = args.max_tokens,
                 trust_remote_code = args.trust_remote_code,
             )
-        
+
+        elif args.backend == "sglang":
+            return SglangGenerator(
+                model_name = args.model_name,
+                model_type = args.model_type,
+                batch_size = args.batch_size,
+                temperature = args.temperature,
+                top_p = args.top_p,
+                num_samples = args.num_samples,
+                max_tokens = args.max_tokens,
+            )
+
         elif args.backend == "openai":
             return OpenaiGenerator(
                 model_name = args.model_name,

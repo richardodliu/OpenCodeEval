@@ -28,7 +28,7 @@ class VllmGenerator(Generator):
 
         super().__init__(model_name)
 
-        print("Initializing a decoder model: {} ...".format(model_name))
+        print("Initializing a decoder model in vllm: {} ...".format(model_name))
         self.tokenizer_name = tokenizer_name if tokenizer_name is not None else model_name
         self.model_type = model_type
         self.batch_size = batch_size
@@ -45,7 +45,7 @@ class VllmGenerator(Generator):
         self.model = LLM(
             model = self.model_name,
             tokenizer = self.tokenizer_name,
-            max_model_len = self.max_tokens,
+            dtype = self.dtype,
             tensor_parallel_size = self.num_gpus,
             trust_remote_code = self.trust_remote_code
         )

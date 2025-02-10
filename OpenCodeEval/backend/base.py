@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 def make_chat_template(
         prompt: str,
         response_prefix: str = "",
-        is_chat: bool = False,
+        is_chat: bool = True,
         tokenizer: Callable = None
     ) -> str:
 
