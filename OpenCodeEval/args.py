@@ -20,7 +20,6 @@ SPLITS = {
     "Spider": ["train", "dev"]
 }
 
-
 def check_args(args):
 
     if args.tokenizer_name is None:

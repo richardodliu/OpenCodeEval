@@ -107,9 +107,9 @@ class MBPP(Benchmark):
         task_data = self.tasks[solution['task_id']]
 
         if self.split == "base":
-            test_code = "\n".join(task_data['test_imports']) + "\n\n" + task_data['test']
-        elif self.split == "plus":
             test_code = "\n".join(task_data['test_imports']) + "\n\n" + "\n".join(task_data['test_list'])
+        elif self.split == "plus":
+            test_code = "\n".join(task_data['test_imports']) + "\n\n" + task_data['test']
 
         code =  (
             "\n".join(self.imports_code) + "\n"
