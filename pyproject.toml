@@ -17,10 +17,9 @@ dependencies = [
     "func_timeout",
 ]
 
-optional-dependencies = {
-    "vllm" = ["vllm"],
-    "sglang" = ["sglang"],
-}
+[project.optional-dependencies]
+vllm = ["vllm"]
+sglang = ["sglang"]
 
 [tool.setuptools.packages.find]
 where = ["."]
