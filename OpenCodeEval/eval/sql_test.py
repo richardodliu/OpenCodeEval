@@ -157,7 +157,6 @@ def execute_sql(predicted_sql,ground_truth, db_path, method):
 
     else:
         logger.error(f"Unknown evaluation method: {method}")
-        return "error", False
 
 def check_correctness(predicted_sql,ground_truth, db_path, meta_time_out, method):
     try:

@@ -16,11 +16,10 @@ class LeetCode(Benchmark):
 
     def __init__(
         self,
-        name: str = "LeetCode",
         split: Literal["contest", "train", "validation", "test"] = "contest",
         time_out: float = 3.0,
         prompt_type: Literal["Completion", "Instruction"] = "Instruction"
-        ):
+    ):
 
         super().__init__()
         

@@ -81,10 +81,10 @@ class SglangGenerator(Generator):
 
         self.model.shutdown()
 
-        destroy_model_parallel
-        destroy_distributed_environment()
+        # destroy_model_parallel
+        # destroy_distributed_environment()
 
-        del self.model
+        # del self.model
         gc.collect()
         torch.cuda.empty_cache()
 

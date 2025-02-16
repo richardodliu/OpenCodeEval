@@ -10,25 +10,28 @@ from OpenCodeEval.eval.sanitize import sanitize
 
 class MBPP(Benchmark):
 
+    name: str = "MBPP"
+
     imports_code = PYTHON_IMPORTS
     chat_stop = PYTHON_STOP
     base_stop = ['\n"""', "\nassert"]
     # TODO: add more stop words, e.g. "\nif __name__", "\ndef main(", "\nprint(", '\n```\n']
 
-    def __init__(self,
-                 name: str = "MBPP",
-                 split: str = "base",
-                 timeout: float = 3.0,
-                 prompt_type: str = "Instruction"):
-        
+    def __init__(
+        self,
+        split: str = "base",
+        time_out: float = 3.0,
+        prompt_type: str = "Instruction"
+    ):
+
         super().__init__()
         
-        self.name = name
         self.split = split
-        self.timeout = timeout
+        self.time_out = time_out
         self.prompt_type = prompt_type
 
-        self.path = os.path.join(self.path, f"MBPPPlus.jsonl")
+        self.path = os.path.join(self.path, f"{self.name}/data.jsonl")
+
         self.tasks = self.get_task()
 
     def get_task(self):
@@ -117,6 +120,6 @@ class MBPP(Benchmark):
         result = check_correctness(solution['task_id'],
                                    solution['completion_id'],
                                    code,
-                                   self.timeout)
+                                   self.time_out)
         
         return result

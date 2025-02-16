@@ -5,7 +5,7 @@ import traceback
 from typing import Dict, List, Optional, Set, Tuple
 from OpenCodeEval.utils import refine_text
 
-MAX_LINES = 1e9
+MAX_LINES = 50
 
 def syntax_check(code, verbose = False):
     try:
@@ -80,39 +80,45 @@ def sanitize(text: str, entrypoint: Optional[str] = None) -> str:
 
     text = refine_text(text)
 
-    code = extract_longest_valid_code(text)
-    tree = ast.parse(code)
-    
-    definitions = {}
+    try:
+        code = extract_longest_valid_code(text)
 
-    imports = []
+        tree = ast.parse(code)
+            
+        definitions = {}
 
-    for node in tree.body:
-        if isinstance(node, (ast.Import, ast.ImportFrom)):
-            imports.append(node)
-        elif isinstance(node, ast.ClassDef):
-            name = node.name
-            definitions[name] = ('class', node)
-        elif isinstance(node, ast.FunctionDef):
-            name = node.name
-            if has_return_statement(node):
-                definitions[name] = ('function', node)
-        elif isinstance(node, ast.Assign):
-            name = get_definition_name(node)
-            if name:
-                definitions[name] = ('variable', node)
+        imports = []
 
-    if entrypoint:
-        name2deps = get_deps([(name, node) for name, (_, node) in definitions.items()])
-        reachable = get_function_dependency(entrypoint, name2deps)
+        for node in tree.body:
+            if isinstance(node, (ast.Import, ast.ImportFrom)):
+                imports.append(node)
+            elif isinstance(node, ast.ClassDef):
+                name = node.name
+                definitions[name] = ('class', node)
+            elif isinstance(node, ast.FunctionDef):
+                name = node.name
+                if has_return_statement(node):
+                    definitions[name] = ('function', node)
+            elif isinstance(node, ast.Assign):
+                name = get_definition_name(node)
+                if name:
+                    definitions[name] = ('variable', node)
 
-    sanitized_output = []
+        if entrypoint:
+            name2deps = get_deps([(name, node) for name, (_, node) in definitions.items()])
+            reachable = get_function_dependency(entrypoint, name2deps)
 
-    for node in imports:
-        sanitized_output.append(ast.unparse(node))
+        sanitized_output = []
 
-    for name, (_, node) in definitions.items():
-        if not entrypoint or name in reachable:
+        for node in imports:
             sanitized_output.append(ast.unparse(node))
 
-    return "\n".join(sanitized_output)
+        for name, (_, node) in definitions.items():
+            if not entrypoint or name in reachable:
+                sanitized_output.append(ast.unparse(node))
+
+        return "\n".join(sanitized_output)
+
+    except Exception as e:
+        print(f"Error extracting longest valid code: {e}")
+        return ""

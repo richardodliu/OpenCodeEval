@@ -67,9 +67,11 @@ def markdown_extract(text: str, mode: Literal["first", "last", "all"] = "all") -
     else:
             return ""
 
-def program_extract(text: str,
-                    program: str = "python",
-                    mode: Literal["first", "last", "all"] = "all") -> str:
+def program_extract(
+    text: str,
+    program: str = "python",
+    mode: Literal["first", "last", "all"] = "all"
+) -> str:
 
     program_pattern = rf"```{program}[ \t]*[\r\n]+[ \t]*(.*?)[ \t]*[\r\n]+[ \t]*```"
     program_re = re.compile(program_pattern, re.DOTALL | re.IGNORECASE)

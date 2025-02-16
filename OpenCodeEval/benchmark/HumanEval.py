@@ -16,15 +16,13 @@ class HumanEval(Benchmark):
 
     def __init__(
         self,
-        name: str = "HumanEval",
         split: Literal["base", "hard"] = "base",
         time_out: float = 3.0,
         prompt_type: str = "Completion"
-        ):
+    ):
 
         super().__init__()
-        
-        self.name = name
+
         self.split = split
         self.time_out = time_out
         self.prompt_type = prompt_type

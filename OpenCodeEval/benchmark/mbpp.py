@@ -17,15 +17,13 @@ class mbpp(Benchmark):
 
     def __init__(
         self,
-        name: str = "mbpp",
         split: Literal["full", "sanitized"] = "full",
         time_out: float = 3.0,
         prompt_type: str = "Instruction"
-        ):
+    ):
 
         super().__init__()
-        
-        self.name = name
+
         self.split = split
         self.time_out = time_out
         self.prompt_type = prompt_type
