@@ -70,7 +70,7 @@ OpenCodeEval  --model_name '/path/to/your/model/checkpoint' \
               --save 'test/output' \
               --num_gpus 1 \
               --num_samples 1 \
-              --k 1 \
+              --list_k '1' \
               --temperature 0.0 \
               --num_workers 10 \
               --batch_size 200 \
