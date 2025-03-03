@@ -160,7 +160,7 @@ This project is licensed under the Apache License 2.0. See the LICENSE file for 
 If you use OpenCodeEval in your research, please cite:
 
 ```bibtex
-@software{OpenCodeEval2024,
+@software{OpenCodeEval,
   title = {OpenCodeEval: An Extensible and Efficient Evaluation Framework for Code Generation Tasks on Large Language Models},
   author = {Ren-Biao Liu},
   year = {2024},
