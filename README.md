@@ -22,7 +22,8 @@ OpenCodeEval is a robust framework designed to evaluate LLMs' performance on cod
 
 - Backend support:
   - vLLM acceleration
-  - OpenAI API integration (coming soon)
+  - Sglang acceleration
+  - OpenAI API integration
 
 - Comprehensive evaluation tools:
   - Pass@k metrics
@@ -45,44 +46,41 @@ cd src/data
 bash dataset.sh
 ```
 
-3. Run evaluation:
+3. Install dependencies:
+
+```bash
+pip install -e .
+```
+
+4. Run evaluation:
 
 Basic usage:
-```python
-python src/main.py \
-    --model_name <your_model_name> \
-    --save_path <output_directory> \
-    --num_gpus <number_of_gpus> \
-    --batch_size <batch_size> \
-    --task <benchmark_name>
+```bash
+OpenCodeEval  --model_name <your_model_name> \
+              --save_path <output_directory> \
+              --num_gpus <number_of_gpus> \
+              --batch_size <batch_size> \
+              --task <benchmark_name>
 ```
 
 Complete example:
-```python
-python src/main.py \
-    --model_name "/path/to/your/model/checkpoint" \
-    --task "LeetCodeTest" \
-    --save "test/output" \
-    --num_gpus 1 \
-    --num_samples 1 \
-    --k 1 \
-    --temperature 0.0 \
-    --num_workers 10 \
-    --batch_size 200 \
-    --max_tokens 4096 \
-    --model_type "Chat" \
-    --prompt_type "Instruction" \
-    --prompt_prefix "" \
-    --prompt_suffix "" \
-    --trust_remote_code
+```bash
+OpenCodeEval  --model_name '/path/to/your/model/checkpoint' \
+              --task 'LeetCodeTest' \
+              --save 'test/output' \
+              --num_gpus 1 \
+              --num_samples 1 \
+              --k 1 \
+              --temperature 0.0 \
+              --num_workers 10 \
+              --batch_size 200 \
+              --max_tokens 4096 \
+              --model_type 'Chat' \
+              --prompt_type 'Instruction' \
+              --prompt_prefix '' \
+              --prompt_suffix '' \
+              --trust_remote_code
 ```
-
-Key parameters:
-- `model_name`: Path to model checkpoint or Hugging Face model ID
-- `task`: Benchmark name (HumanEval/MBPP/BigCodeBench/LeetCode)
-- `save`: Output directory for results
-- `model_type`: Base or Chat
-- `prompt_type`: Completion or Instruction
 
 ## Supported Benchmarks
 
