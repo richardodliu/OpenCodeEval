@@ -162,7 +162,7 @@ If you use OpenCodeEval in your research, please cite:
 ```bibtex
 @software{OpenCodeEval,
   title = {OpenCodeEval: An Extensible and Efficient Evaluation Framework for Code Generation Tasks on Large Language Models},
-  author = {Ren-Biao Liu, Yun-Hui Xia, Chong-Han Liu, Wei Shen},
+  author = {Ren-Biao Liu, Yun-Hui Xia, Wei Shen, Chong-Han Liu},
   year = {2024},
   url = {https://github.com/richardodliu/OpenCodeEval}
 }
