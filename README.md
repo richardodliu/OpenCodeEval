@@ -172,10 +172,14 @@ If you use OpenCodeEval in your research, please cite:
 
 We would like to thank the following projects and individuals for their contributions to OpenCodeEval:
 
+### Datasets
 - [HumanEval](https://github.com/openai/humaneval)
-- [MBPP](https://github.com/openai/mbpp)
+- [MBPP](https://github.com/google-research/google-research/tree/master/mbpp)
+- [EvalPlus](https://github.com/evalplus/evalplus)
 - [BigCodeBench](https://github.com/bigcode-project/bigcodebench)
 - [LeetCode](https://github.com/newfacade/LeetCodeDataset/)
+
+### Backends
 - [vLLM](https://github.com/vllm-project/vllm)
 - [Sglang](https://github.com/sgl-project/sglang)
 - [OpenAI](https://openai.com/)
