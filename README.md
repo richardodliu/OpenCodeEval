@@ -161,8 +161,8 @@ If you use OpenCodeEval in your research, please cite:
 
 ```bibtex
 @software{OpenCodeEval2024,
-  title = {OpenCodeEval: A Framework for Evaluating Code Generation Models},
-  author = {richardodliu},
+  title = {OpenCodeEval: A Extensible and Efficient Evaluation Framework for Code Generation Tasks on Large Language Models},
+  author = {Ren-Biao Liu},
   year = {2024},
   url = {https://github.com/richardodliu/OpenCodeEval}
 }
