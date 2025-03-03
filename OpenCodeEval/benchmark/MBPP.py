@@ -83,7 +83,7 @@ class MBPP(Benchmark):
         entry_point = self.tasks[generation['task_id']]["entry_point"]
 
         try:
-            solution = sanitize(generation['completion'])
+            solution = sanitize(generation['completion'], entry_point)
             solution = solution.replace("func0", entry_point)
         except Exception:
             solution = program_extract(generation['completion'], program="python", mode="all")

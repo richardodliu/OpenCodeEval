@@ -56,7 +56,7 @@ def eval_loop(ckpt_path, benchmark_configs, webhook_url, feishu_msg):
         return False
 
     steps = get_ckpt(ckpt_path)
-    steps = sorted(steps, key = extract_number)
+    steps = sorted(steps, key = extract_number, reverse=True)
 
     logger.info(f"all step: {steps}")
 
