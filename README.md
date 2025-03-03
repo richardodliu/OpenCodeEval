@@ -182,7 +182,7 @@ We would like to thank the following projects and individuals for their contribu
 ### Backends
 - [vLLM](https://github.com/vllm-project/vllm)
 - [Sglang](https://github.com/sgl-project/sglang)
-- [OpenAI](https://openai.com/)
+- [OpenAI](https://github.com/openai/openai-python)
 
 ## Contact
 
