@@ -74,10 +74,13 @@ class Bird(Benchmark):
         result = dict(
             task_id = generation['task_id'],
             completion_id = generation['completion_id'],
-            solution = ' '.join(program_extract(
-                text = generation['completion'],
-                program = 'sql', 
-                mode = 'last').splitlines())
+            solution = ' '.join(
+                program_extract(
+                    text = generation['completion'],
+                    program = 'sql', 
+                    mode = 'last'
+                ).splitlines()
+            )
         )
 
         return result
