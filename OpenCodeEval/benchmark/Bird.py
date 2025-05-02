@@ -29,7 +29,7 @@ class Bird(Benchmark):
             logger.error("Completion prompt type not supported for Bird")
 
         self.database = os.path.join(self.path, f"{self.name}/{self.split}/database")
-        self.path = os.path.join(self.path, f"{self.name}/{self.split}/merge.jsonl")
+        self.path = os.path.join(self.path, f"{self.name}/{self.split}/data.jsonl")
 
         self.tasks = self.get_task()
         
