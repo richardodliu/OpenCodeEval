@@ -21,7 +21,7 @@ def post_with_retry(url, headers, data, max_num=3):
 
 
 def build_message(ckpt_name, job_result):
-    exp_name = '+'.join(ckpt_name.split('/')[-3:])
+    exp_name = '+'.join(ckpt_name.split('/')[-4:])
     message = f'====={exp_name}=====\n\n'
     handler_result = defaultdict(lambda: defaultdict(lambda: str()))
 

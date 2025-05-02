@@ -137,30 +137,35 @@ def execute_sql(predicted_sql,ground_truth, db_path, method):
     result = "failed"
     passed = False
 
+    if predicted_res is None:
+        sql_return = [[]]
+    else:
+        sql_return = predicted_res
+
     if method == "set_match":
 
         if set(predicted_res) == set(ground_truth_res):
             result = "passed"
             passed = True
-        return result, passed
+        return result, passed, sql_return
 
     elif method == "exact_match":
 
         order_matters = "orderby" in re.sub(r"\s+", ground_truth.lower(), "")
-        if result_eq(predicted_res, ground_truth_res, order_matters=order_matters):
+        if result_eq(predicted_res, ground_truth_res, order_matters = order_matters):
             result = "passed"
             passed = True
         else:
             passed = False
 
-        return result, passed
+        return result, passed, sql_return
 
     else:
         logger.error(f"Unknown evaluation method: {method}")
 
 def check_correctness(predicted_sql,ground_truth, db_path, meta_time_out, method):
     try:
-        result, passed = func_timeout(
+        result, passed, sql_return = func_timeout(
             meta_time_out,
             execute_sql,
             args = (
@@ -173,8 +178,10 @@ def check_correctness(predicted_sql,ground_truth, db_path, meta_time_out, method
     except FunctionTimedOut:
         result = "timeout"
         passed = False
+        sql_return = [[]]
     except Exception as e:
         result = f"error:{e}"
         passed = False
+        sql_return = [[]]
 
-    return result, passed
+    return result, passed, sql_return

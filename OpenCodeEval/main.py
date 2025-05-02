@@ -19,16 +19,19 @@ def main():
 
     task = BenchmarkFactory.get_task(args)
 
-    # check if prompts exits
-    if not os.path.exists(os.path.join(save_path, "prompts.jsonl")):
+    # get prompts
+    prompts = task.get_prompt()
 
-        # get prompts
-        prompts = task.get_prompt()
+    for prompt in prompts:
+        prompt['prompt'] = refine_text(args.prompt_prefix + prompt['prompt'] + args.prompt_suffix)
+    prompts = sorted(prompts, key = lambda x: x['task_id'])
+    write_jsonl(os.path.join(save_path, "prompts.jsonl"), prompts)
 
-        for prompt in prompts:
-            prompt['prompt'] = refine_text(args.prompt_prefix + prompt['prompt'] + args.prompt_suffix)
-        prompts = sorted(prompts, key = lambda x: x['task_id'])
-        write_jsonl(os.path.join(save_path, "prompts.jsonl"), prompts)
+    if args.split  ==  'plus':
+        base_path = save_path.replace('plus', 'base')
+        if os.path.exists(os.path.join(base_path, "generations.jsonl")):
+            generations = list(stream_jsonl(os.path.join(base_path, "generations.jsonl")))
+            write_jsonl(os.path.join(save_path, "generations.jsonl"), generations)
 
     # check if generations exits
     if not os.path.exists(os.path.join(save_path, "generations.jsonl")):
@@ -53,11 +56,10 @@ def main():
     if not os.path.exists(os.path.join(save_path, "solutions.jsonl")):
 
         generations = list(stream_jsonl(os.path.join(save_path, "generations.jsonl")))
-        solutions = process_map(
+        solutions = thread_map(
             task.postprocess_generation,
             generations,
             max_workers = args.num_workers,
-            chunksize = 1,
             desc = "Post-processing Generations"
         )
         solutions = sorted(solutions, key = lambda x: (x['task_id'], x['completion_id']))
@@ -70,7 +72,6 @@ def main():
             task.process_results,
             solutions,
             max_workers = args.num_workers,
-            chunksize = 1,
             desc = "Evaluating Solutions"
         )
         evaluations = sorted(evaluations, key = lambda x: (x['task_id'], x['completion_id']))

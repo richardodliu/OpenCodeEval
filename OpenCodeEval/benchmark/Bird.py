@@ -29,7 +29,7 @@ class Bird(Benchmark):
             logger.error("Completion prompt type not supported for Bird")
 
         self.database = os.path.join(self.path, f"{self.name}/{self.split}/database")
-        self.path = os.path.join(self.path, f"{self.name}/{self.split}/data.jsonl")
+        self.path = os.path.join(self.path, f"{self.name}/{self.split}/merge.jsonl")
 
         self.tasks = self.get_task()
         
@@ -51,12 +51,19 @@ class Bird(Benchmark):
         Builds the prompt for the LM to generate from.
         """
 
+        def construct_prompt(data):
+            instruction = data['o_schema']
+            instruction += f"\n\n-- External Knowledge: {data['evidence']}\n\n"
+            instruction += "-- Using valid SQLite and understanding External Knowledge, answer the following questions for the tables provided above.\n\n"
+            instruction += f"Question: {data['question']}\n"
+            return instruction
+
         prompts = []
         
         
         for task_id, task_data in self.tasks.items():
             
-            prompt = task_data['instruction']
+            prompt = construct_prompt(task_data)
             
             prompts.append(
                 dict(
@@ -71,16 +78,20 @@ class Bird(Benchmark):
         Postprocess the generations.
         """
 
+        def one_line_sql(response):
+
+            response = program_extract(response, "sql", "last").strip()
+
+            lines = response.splitlines()
+            lines = [l.strip() for l in lines if l.strip()]
+            sql = " ".join(lines)
+            
+            return sql
+
         result = dict(
             task_id = generation['task_id'],
             completion_id = generation['completion_id'],
-            solution = ' '.join(
-                program_extract(
-                    text = generation['completion'],
-                    program = 'sql', 
-                    mode = 'last'
-                ).splitlines()
-            )
+            solution = one_line_sql(generation['completion'])
         )
 
         return result
@@ -94,9 +105,9 @@ class Bird(Benchmark):
 
         db_path = self.database + f"/{task_data['db_id']}/{task_data['db_id']}.sqlite"
 
-        result, passed = check_correctness(
+        result, passed, sql_return = check_correctness(
             solution['solution'],
-            task_data['output'],
+            task_data['sql'],
             db_path,
             self.time_out,
             "set_match"
@@ -107,5 +118,6 @@ class Bird(Benchmark):
             completion_id = solution['completion_id'],
             passed = passed,
             result = result,
-            solution = solution['solution']
+            solution = solution['solution'],
+            sql_return = sql_return
         )
