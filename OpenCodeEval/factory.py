@@ -8,6 +8,8 @@ from OpenCodeEval.benchmark.BigCodeBench import BigCodeBench
 from OpenCodeEval.benchmark.Bird import Bird
 from OpenCodeEval.benchmark.Spider import Spider
 
+from OpenCodeEval.benchmark.understandml import understandml
+
 from OpenCodeEval.backend.vllm import VllmGenerator
 from OpenCodeEval.backend.sglang import SglangGenerator
 from OpenCodeEval.backend.openai import OpenaiGenerator
@@ -23,7 +25,8 @@ class BenchmarkFactory:
             "LeetCode": LeetCode,
             "BigCodeBench": BigCodeBench,
             "Bird": Bird,
-            "Spider": Spider
+            "Spider": Spider,
+            "understandml": understandml
         }
 
         # Check if the task exists in the map

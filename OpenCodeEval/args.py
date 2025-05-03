@@ -7,7 +7,8 @@ BENCHMARKS = [
     "LeetCode",
     "BigCodeBench",
     "Bird",
-    "Spider"
+    "Spider",
+    "understandml"
 ]
 
 SPLITS = {
@@ -17,7 +18,8 @@ SPLITS = {
     "LeetCode": ["contest", "train", "validation", "test"],
     "BigCodeBench": ["full", "hard"],
     "Bird": ["train", "dev"],
-    "Spider": ["train", "dev"]
+    "Spider": ["train", "dev"],
+    "understandml": ["base", "chat"]
 }
 
 def check_args(args):
