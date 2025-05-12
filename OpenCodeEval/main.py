@@ -49,11 +49,36 @@ def main():
             args.response_prefix,
             args.response_suffix
         )
-        generations = sorted(generations, key = lambda x: (x['task_id'], x['completion_id']))
+
+        generations = sorted([data for data in generations if data['completion']], key = lambda x: (x['task_id'], x['completion_id']))
         write_jsonl(os.path.join(save_path, "generations.jsonl"), generations)
 
+    else:
+        
+        generated_ids = [data['task_id'] for data in stream_jsonl(os.path.join(save_path, "generations.jsonl"))]
+        prompts = [data for data in stream_jsonl(os.path.join(save_path, "prompts.jsonl")) if data['task_id'] not in generated_ids]
+        if len(prompts) > 0:
+
+            # get generations
+            decoder = BackendFactory.get_backend(args)
+            if decoder.is_chat():
+                decoder.set_stop(task.chat_stop)
+            else:
+                decoder.set_stop(task.chat_stop + task.base_stop)
+
+            continue_generations = decoder.generate(
+                prompts,
+                args.response_prefix,
+                args.response_suffix
+            )
+
+            generations = sorted([data for data in continue_generations if data['completion']] + list(stream_jsonl(os.path.join(save_path, "generations.jsonl"))), key = lambda x: (x['task_id'], x['completion_id']))
+            write_jsonl(os.path.join(save_path, "generations.jsonl"), generations)
+
+
     # post-process generations
-    if not os.path.exists(os.path.join(save_path, "solutions.jsonl")):
+    # if not os.path.exists(os.path.join(save_path, "solutions.jsonl")):
+    if True:
 
         generations = list(stream_jsonl(os.path.join(save_path, "generations.jsonl")))
         solutions = thread_map(
@@ -66,7 +91,8 @@ def main():
         write_jsonl(os.path.join(save_path, "solutions.jsonl"), solutions)
 
     # evaluate solutions
-    if not os.path.exists(os.path.join(save_path, "evaluations.jsonl")):
+    # if not os.path.exists(os.path.join(save_path, "evaluations.jsonl")):
+    if True:
         solutions = list(stream_jsonl(os.path.join(save_path, "solutions.jsonl")))
         evaluations = thread_map(
             task.process_results,
@@ -78,7 +104,8 @@ def main():
         write_jsonl(os.path.join(save_path, "evaluations.jsonl"), evaluations)
 
     # calculate pass@k
-    if not os.path.exists(os.path.join(save_path, "results.jsonl")):
+    # if not os.path.exists(os.path.join(save_path, "results.jsonl")):
+    if True:
         evaluations = list(stream_jsonl(os.path.join(save_path, "evaluations.jsonl")))
         results = calculate_pass_at_k(evaluations, args.num_samples, args.list_k)
         write_jsonl(os.path.join(save_path, "results.jsonl"), results)

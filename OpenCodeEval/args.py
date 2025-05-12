@@ -19,7 +19,7 @@ SPLITS = {
     "BigCodeBench": ["full", "hard"],
     "Bird": ["train", "dev"],
     "Spider": ["train", "dev"],
-    "understandml": ["base", "chat"]
+    "understandml": ["human", "model"]
 }
 
 def check_args(args):

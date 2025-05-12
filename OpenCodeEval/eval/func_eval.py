@@ -53,7 +53,7 @@ def check_correctness(task_id: int,
             check_program = solution
 
             try:
-                exec_globals = {'__builtins__': __builtins__}
+                exec_globals = {}
                 with swallow_io():
                     with time_limit(time_out):
                         exec(check_program, exec_globals)

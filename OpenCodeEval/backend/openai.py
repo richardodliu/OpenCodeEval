@@ -45,21 +45,32 @@ class OpenaiGenerator(Generator):
         self.eos = eos
 
     def connect_server(self, prompt):
+
+        num_tries = 5
+
         try:
-            result = self.client.chat.completions.create(
-                model = self.model_name,
-                messages=[
-                    {"role": "user", "content": prompt['prompt']}
-                ], 
-                n = self.num_samples,
-                stream = False,
-                stop = self.eos,
-                temperature = self.temperature,
-                top_p = self.top_p,
-                max_tokens = self.max_tokens,
-                extra_headers = {'apikey':os.getenv("OPENAI_API_KEY")},
-            )
-            
+
+            for _ in range(num_tries):
+
+                result = self.client.chat.completions.create(
+                    model = self.model_name,
+                    messages=[
+                        {"role": "user", "content": prompt['prompt']}
+                    ], 
+                    n = self.num_samples,
+                    stream = False,
+                    # stop = self.eos,
+                    temperature = self.temperature,
+                    # top_p = self.top_p,
+                    max_tokens = self.max_tokens,
+                    extra_headers = {'apikey':os.getenv("OPENAI_API_KEY")},
+                )
+
+                if all(choice.message.content for choice in result.choices):
+                    break
+                else:
+                    logger.warning("No content in the response, retrying...")
+                
             results = [
                 dict(
                     task_id=prompt['task_id'],
@@ -75,12 +86,13 @@ class OpenaiGenerator(Generator):
                 dict(
                     task_id=prompt['task_id'],
                     completion_id=i,
-                    completion='Error:{}'.format(e)
+                    completion = ''
                 )
                 for i in range(self.num_samples)
             ]
             
         return results
+
     def generate(
         self,
         prompt_set: List[Dict],

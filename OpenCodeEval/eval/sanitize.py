@@ -5,8 +5,6 @@ import traceback
 from typing import Dict, List, Optional, Set, Tuple
 from OpenCodeEval.utils import refine_text
 
-MAX_LINES = 50
-
 def syntax_check(code, verbose = False):
     try:
         ast.parse(code)
@@ -19,8 +17,6 @@ def syntax_check(code, verbose = False):
 def extract_longest_valid_code(text: str) -> str:
     lines = text.splitlines()
 
-    if len(lines) > MAX_LINES:
-        lines = lines[:MAX_LINES]
     max_valid_lines = 0
     max_valid_snippet = ""
 
@@ -76,6 +72,9 @@ def get_definition_name(node: ast.AST) -> Optional[str]:
 def has_return_statement(node: ast.AST) -> bool:
     return any(isinstance(n, ast.Return) for n in ast.walk(node))
 
+def has_yield_statement(node: ast.AST) -> bool:
+    return any(isinstance(n, ast.Yield) for n in ast.walk(node))
+
 def sanitize(text: str, entrypoint: Optional[str] = None) -> str:
 
     text = refine_text(text)
@@ -97,7 +96,7 @@ def sanitize(text: str, entrypoint: Optional[str] = None) -> str:
                 definitions[name] = ('class', node)
             elif isinstance(node, ast.FunctionDef):
                 name = node.name
-                if has_return_statement(node):
+                if has_return_statement(node) or has_yield_statement(node):
                     definitions[name] = ('function', node)
             elif isinstance(node, ast.Assign):
                 name = get_definition_name(node)

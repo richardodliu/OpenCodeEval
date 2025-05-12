@@ -11,3 +11,5 @@ save/
 *.zip
 *.csv
 *.tar.gz
+
+*git.sh
