@@ -16,6 +16,7 @@ def syntax_check(code, verbose = False):
 
 def extract_longest_valid_code(text: str) -> str:
     lines = text.splitlines()
+    lines = [line for line in lines if line.strip()][:20]
 
     max_valid_lines = 0
     max_valid_snippet = ""
@@ -81,6 +82,7 @@ def sanitize(text: str, entrypoint: Optional[str] = None) -> str:
 
     try:
         code = extract_longest_valid_code(text)
+        print(f"Extracted code: {code}")
 
         tree = ast.parse(code)
             

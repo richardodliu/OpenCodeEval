@@ -13,6 +13,7 @@ from OpenCodeEval.benchmark.understandml import understandml
 from OpenCodeEval.backend.vllm import VllmGenerator
 from OpenCodeEval.backend.sglang import SglangGenerator
 from OpenCodeEval.backend.openai import OpenaiGenerator
+from OpenCodeEval.backend.hf import TransformerGenerator
 
 class BenchmarkFactory:
 
@@ -83,6 +84,20 @@ class BackendFactory:
                 top_p = args.top_p,
                 num_samples = args.num_samples,
                 max_tokens = args.max_tokens,
+            )
+
+        elif args.backend == "transformer":
+            return TransformerGenerator(
+                model_name = args.model_name,
+                model_type = args.model_type,
+                tokenizer_name = args.tokenizer_name,
+                num_gpus = args.num_gpus,
+                batch_size = args.batch_size,
+                temperature = args.temperature,
+                top_p = args.top_p,
+                num_samples = args.num_samples,
+                max_tokens = args.max_tokens,
+                trust_remote_code = args.trust_remote_code,
             )
         else:
             logger.error(f"Unknown Backend type: {args.backend}")

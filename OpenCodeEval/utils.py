@@ -11,12 +11,14 @@ from typing import Dict, List, Union, Iterable, Callable, Literal
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 def refine_text(text: str, add_new_line: bool = True) -> str:
-    text =  text.replace("\t", "    ")
-    text = text.replace("\r\n", "\n").replace("\r", "\n")
+    text = text.replace("\t", "    ")
+    # only remove empty lines, but keep the orginal text structure
+    lines = [line for line in text.splitlines() if line.strip()]
+    text = "\n".join(lines)
     if add_new_line:
-        return text.strip() + "\n"
+        return text + "\n"
     else:
-        return text.strip()
+        return text
 
 def multi_process_function(function: Callable,
                            parameters: List,
@@ -38,34 +40,6 @@ def multi_process_function(function: Callable,
             results.append(result)
 
     return results
-
-def markdown_extract(text: str, mode: Literal["first", "last", "all"] = "all") -> str:
-    """
-    Extract content enclosed by triple backticks (```) in a Markdown text.
-
-    Args:
-        text (str): The Markdown text to extract from.
-        mode (Literal["first", "last", "all"]):
-            - "first": Extract the first block of content.
-            - "last": Extract the last block of content.
-            - "all": Extract all blocks of content and join them with double newlines.
-
-    Returns:
-        str: Extracted content based on the specified mode.
-    """
-    # Match content inside triple backticks, ignoring the ``` lines
-    pattern = r"```[ \t]*[\r\n]+[ \t]*(.*?)[ \t]*[\r\n]+[ \t]*```"
-    matches = re.findall(pattern, text, re.DOTALL)
-
-    if matches:
-        if mode == "first":
-            return matches[0]
-        elif mode == "last":
-            return matches[-1]
-        elif mode == "all":
-            return "\n\n".join(matches)
-    else:
-            return ""
 
 def program_extract(
     text: str,

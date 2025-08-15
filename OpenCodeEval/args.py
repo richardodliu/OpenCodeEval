@@ -62,7 +62,7 @@ def get_args(parser):
     parser.add_argument("--model_name", default = None, type=str)
     parser.add_argument("--tokenizer_name", default = None, type=str)
     parser.add_argument("--trust_remote_code", action="store_true")
-    parser.add_argument("--backend", default="vllm", type=str, choices=["openai", "vllm", "sglang"])
+    parser.add_argument("--backend", default="vllm", type=str, choices=["openai", "vllm", "sglang", "transformer"])
     parser.add_argument("--task", default="HumanEval", type=str, choices = BENCHMARKS)
     parser.add_argument("--split", default="base", type = str)
     parser.add_argument("--prompt_type", default = "Instruction", type=str, choices=["Completion", "Instruction"])

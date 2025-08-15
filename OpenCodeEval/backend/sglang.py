@@ -1,8 +1,9 @@
 import os
+import sys
 
-from loguru import logger
 
 from tqdm import tqdm
+from loguru import logger
 from typing import List, Dict
 
 from OpenCodeEval.backend.base import Generator, make_chat_template

@@ -71,12 +71,14 @@ class HumanEval(Benchmark):
         entry_point = self.tasks[generation['task_id']]["entry_point"]
 
         try:
-            completion = '\n'.join(generation['completion'].splitlines()[-200:])
+            lines = generation['completion'].splitlines()
+            lines = [line for line in lines if line.strip()][:20]
+            completion = '\n'.join(lines)
 
             if '</think>' in completion:
                 completion = completion.split('</think>')[1]
             
-            solution = sanitize(completion, entry_point)
+            solution = sanitize(self.tasks[generation['task_id']]['prompt'] + "    "+ completion, entry_point)
         except Exception:
             solution = program_extract(generation['completion'], program="python", mode="all")
 

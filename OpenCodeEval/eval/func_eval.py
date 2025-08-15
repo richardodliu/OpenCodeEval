@@ -188,7 +188,7 @@ def reliability_guard(maximum_memory_bytes: Optional[int] = None):
 
     os.kill = None
     os.system = None
-    os.putenv = None
+    # os.putenv = None # TODO: check if this is needed
     os.remove = None
     os.removedirs = None
     os.rmdir = None
