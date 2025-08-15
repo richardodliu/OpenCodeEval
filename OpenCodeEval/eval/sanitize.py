@@ -2,6 +2,7 @@
 import ast
 import traceback
 
+from loguru import logger
 from typing import Dict, List, Optional, Set, Tuple
 from OpenCodeEval.utils import refine_text
 
@@ -16,7 +17,7 @@ def syntax_check(code, verbose = False):
 
 def extract_longest_valid_code(text: str) -> str:
     lines = text.splitlines()
-    lines = [line for line in lines if line.strip()][:20]
+    lines = [line for line in lines if line.strip()]
 
     max_valid_lines = 0
     max_valid_snippet = ""
@@ -82,7 +83,6 @@ def sanitize(text: str, entrypoint: Optional[str] = None) -> str:
 
     try:
         code = extract_longest_valid_code(text)
-        print(f"Extracted code: {code}")
 
         tree = ast.parse(code)
             
@@ -121,5 +121,5 @@ def sanitize(text: str, entrypoint: Optional[str] = None) -> str:
         return "\n".join(sanitized_output)
 
     except Exception as e:
-        print(f"Error extracting longest valid code: {e}")
+        logger.error(f"Error extracting longest valid code: {e}")
         return ""
