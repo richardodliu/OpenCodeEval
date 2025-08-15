@@ -8,6 +8,8 @@ from OpenCodeEval.factory import BenchmarkFactory, BackendFactory
 
 from tqdm.contrib.concurrent import process_map, thread_map
 
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
 def main():
 
     parser = argparse.ArgumentParser()

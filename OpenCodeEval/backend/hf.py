@@ -63,8 +63,9 @@ class TransformerGenerator(Generator):
             self.model = self.model.cuda()
 
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-
-        os.environ["TOKENIZERS_PARALLELISM"] = "false"
+        if self.tokenizer.pad_token is None:
+            self.tokenizer.pad_token = self.tokenizer.eos_token
+            self.tokenizer.pad_token_id = self.tokenizer.eos_token_id
 
         print(f"Initializing with num_samples: {self.num_samples}")
         self.sampling_params = dict(
@@ -84,13 +85,7 @@ class TransformerGenerator(Generator):
             return False
         
     def set_stop(self, eos: List[str]):
-        self.eos = eos
-
-    def truncate_eos(self, output: str) -> str:
-        for stop_word in self.eos:
-            if stop_word in output:
-                output = output[:output.index(stop_word)]
-        return output
+        self.stop_tokens = eos
         
     def release_memory(self):
 
@@ -109,7 +104,7 @@ class TransformerGenerator(Generator):
             response_suffix: str = ""
         ) -> List[str]:
 
-        logger.info("Example Prompt:\n{}", prompt_set[0]['prompt'])
+        logger.info(f"Example Prompt:\n{prompt_set[0]['prompt']}")
 
         generation_set = []
 
@@ -122,7 +117,7 @@ class TransformerGenerator(Generator):
                 tokenizer = self.tokenizer
             )
 
-            inputs_ids = self.tokenizer(
+            inputs_tokens = self.tokenizer(
                 input_text,
                 return_tensors="pt"
             )
@@ -130,30 +125,27 @@ class TransformerGenerator(Generator):
             # Move inputs to GPU if model is on GPU
             if torch.cuda.is_available():
                 # Move inputs_ids and attention_mask to GPU
-                inputs_ids = {k: v.to(self.model.device) for k, v in inputs_ids.items()}
-
-            input_token_length = inputs_ids['input_ids'].shape[1]
+                inputs_tokens = {k: v.to(self.model.device) for k, v in inputs_tokens.items()}
 
             # shape[0] is the batch size, shape[1] is the sequence length
-            self.sampling_params['max_new_tokens'] = self.max_tokens - input_token_length
+            self.sampling_params['max_new_tokens'] = 256
 
             outputs = self.model.generate(
-                **inputs_ids,
+                **inputs_tokens,
                 **self.sampling_params
             )
+
 
             # Decode each generated sequence
             for completion_idx, output in enumerate(outputs):
                 # Decode the generated tokens (skip the input tokens)
-                generated_tokens = output[input_token_length:]
-                completion = self.tokenizer.decode(generated_tokens, skip_special_tokens=False)
-                completion = self.truncate_eos(completion)
-                
-                # Process completion with prefix/suffix
-                if self.is_chat():
-                    completion = refine_text(completion)
-                else:
-                    completion = refine_text(prompt['prompt'] + completion)
+                completion = self.tokenizer.decode(output, skip_special_tokens=True)
+                completion = completion.split(input_text)[-1]
+                completion = self._stop_at_stop_token(completion, self.stop_tokens)
+                completion = refine_text(completion)
+                if not self.is_chat():
+                    completion = input_text + completion
+                logger.info(f"Refined Completion:\n{completion}")
                 
                 generation_set.append({
                     'task_id': prompt['task_id'],

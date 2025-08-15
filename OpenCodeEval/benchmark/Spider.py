@@ -5,7 +5,7 @@ from loguru import logger
 from typing import Literal
 
 from OpenCodeEval.benchmark.base import Benchmark
-from OpenCodeEval.utils import refine_text, program_extract, markdown_extract, stream_jsonl
+from OpenCodeEval.utils import refine_text, program_extract, stream_jsonl
 from OpenCodeEval.eval.sql_test import check_correctness
 
 class Spider(Benchmark):

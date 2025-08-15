@@ -12,13 +12,14 @@ class HumanEval(Benchmark):
 
     imports_code = PYTHON_IMPORTS
     chat_stop = PYTHON_STOP
-    base_stop = ["\ndef ", "\nclass ", "\nimport ", "\nfrom ", "\nassert "]
+    base_stop = ["\ndef ", "\nclass ", "\nimport ", "\nfrom ", "\nassert ", "Your code here"]
 
     def __init__(
         self,
         split: Literal["base", "hard"] = "base",
         time_out: float = 3.0,
-        prompt_type: str = "Completion"
+        prompt_type: str = "Completion",
+        model_type: str = "Base"
     ):
 
         super().__init__()
@@ -78,7 +79,7 @@ class HumanEval(Benchmark):
             if '</think>' in completion:
                 completion = completion.split('</think>')[1]
             
-            solution = sanitize(self.tasks[generation['task_id']]['prompt'] + "    "+ completion, entry_point)
+            solution = sanitize(completion, entry_point)
         except Exception:
             solution = program_extract(generation['completion'], program="python", mode="all")
 
