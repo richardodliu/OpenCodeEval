@@ -5,8 +5,8 @@ from loguru import logger
 from tqdm import tqdm
 from typing import List, Dict
 
-from OpenCodeEval.backend.base import Generator, make_chat_template
-
+from OpenCodeEval.backend.base import Generator
+from OpenCodeEval.backend.utils import make_chat_template
 from OpenCodeEval.utils import refine_text
 
 class VllmGenerator(Generator):

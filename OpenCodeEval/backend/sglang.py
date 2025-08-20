@@ -6,8 +6,8 @@ from tqdm import tqdm
 from loguru import logger
 from typing import List, Dict
 
-from OpenCodeEval.backend.base import Generator, make_chat_template
-
+from OpenCodeEval.backend.base import Generator
+from OpenCodeEval.backend.utils import make_chat_template
 from OpenCodeEval.utils import refine_text
 
 class SglangGenerator(Generator):

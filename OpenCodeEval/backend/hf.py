@@ -7,8 +7,8 @@ from tqdm import tqdm
 from loguru import logger
 from typing import List, Dict
 
-from OpenCodeEval.backend.base import Generator, make_chat_template
-
+from OpenCodeEval.backend.base import Generator
+from OpenCodeEval.backend.utils import make_chat_template
 from OpenCodeEval.utils import refine_text
 
 class TransformerGenerator(Generator):
@@ -17,15 +17,17 @@ class TransformerGenerator(Generator):
         self,
         model_name: str,
         tokenizer_name: str = None,
-        model_type: str = "Instruction",
+        model_type: str = "Base",
         dtype: str = "bfloat16",
+        response_prefix: str = "",
+        response_suffix: str = "",
         batch_size : int = 1,
         temperature : float = 0.0,
         top_p : float = 1.0,
         max_tokens : int = 256,
         num_samples: int = 200,
         num_gpus: int = 1,
-        trust_remote_code: bool = True,
+        trust_remote_code: bool = True
     ) -> None:
 
         super().__init__(model_name)
