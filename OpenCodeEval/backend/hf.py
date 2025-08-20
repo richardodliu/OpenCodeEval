@@ -2,6 +2,10 @@ import os
 import sys
 import fla
 import torch
+import multiprocessing as mp
+from functools import partial
+
+# 不在这里全局设置multiprocessing启动方法，避免影响其他模块
 
 from tqdm import tqdm
 from loguru import logger
@@ -10,6 +14,18 @@ from typing import List, Dict
 from OpenCodeEval.backend.base import Generator
 from OpenCodeEval.backend.utils import make_chat_template
 from OpenCodeEval.utils import refine_text
+
+def stop_at_stop_token_static(text: str, stop_tokens: List[str]) -> str:
+    """静态函数：在stop token处停止文本生成"""
+    if stop_tokens is None:
+        return text
+    
+    min_stop_index = len(text)
+    for stop_token in stop_tokens:
+        stop_index = text.find(stop_token)
+        if stop_index != -1 and stop_index < min_stop_index:
+            min_stop_index = stop_index
+    return text[:min_stop_index]
 
 class TransformerGenerator(Generator):
 
@@ -27,7 +43,8 @@ class TransformerGenerator(Generator):
         max_tokens : int = 256,
         num_samples: int = 200,
         num_gpus: int = 1,
-        trust_remote_code: bool = True
+        trust_remote_code: bool = True,
+        seed: int = 42
     ) -> None:
 
         super().__init__(model_name)
@@ -43,6 +60,7 @@ class TransformerGenerator(Generator):
         self.dtype = dtype
         self.num_gpus = num_gpus
         self.trust_remote_code = trust_remote_code
+        self.seed = seed
 
         if self.batch_size != 1:
             logger.warning(f"Batch size must be 1 for transformer, but got {self.batch_size}")
@@ -52,24 +70,17 @@ class TransformerGenerator(Generator):
                 logger.warning(f"Number of samples must be 1 for temperature 0, but got {self.num_samples}")
                 self.num_samples = 1
 
-        from transformers import AutoModelForCausalLM, AutoTokenizer
-
-        self.model = AutoModelForCausalLM.from_pretrained(
-            pretrained_model_name_or_path = self.model_name,
-            torch_dtype = self.dtype,
-            trust_remote_code = self.trust_remote_code
-        )
-        
-        # Move model to GPU
+        # 检查可用的GPU数量
         if torch.cuda.is_available():
-            self.model = self.model.cuda()
+            available_gpus = torch.cuda.device_count()
+            if self.num_gpus > available_gpus:
+                logger.warning(f"Requested {self.num_gpus} GPUs but only {available_gpus} available. Using {available_gpus} GPUs.")
+                self.num_gpus = available_gpus
+        else:
+            logger.warning("CUDA not available, falling back to CPU")
+            self.num_gpus = 0
 
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        if self.tokenizer.pad_token is None:
-            self.tokenizer.pad_token = self.tokenizer.eos_token
-            self.tokenizer.pad_token_id = self.tokenizer.eos_token_id
-
-        print(f"Initializing with num_samples: {self.num_samples}")
+        print(f"Initializing with num_samples: {self.num_samples}, num_gpus: {self.num_gpus}")
         self.sampling_params = dict(
             do_sample = self.temperature > 0,
             temperature = self.temperature,
@@ -88,9 +99,10 @@ class TransformerGenerator(Generator):
         
     def set_stop(self, eos: List[str]):
         self.stop_tokens = eos
+    
+
         
     def release_memory(self):
-
         import gc
         import torch
 
@@ -98,6 +110,117 @@ class TransformerGenerator(Generator):
         del self.tokenizer
         gc.collect()
         torch.cuda.empty_cache()
+
+    def _process_batch_on_gpu(
+        self,
+        gpu_id: int,
+        prompt_batch: List[Dict],
+        model_name: str,
+        model_type: str,
+        dtype: str,
+        trust_remote_code: bool,
+        sampling_params: dict,
+        max_tokens: int,
+        stop_tokens: List[str],
+        seed: int,
+        response_prefix: str = "",
+        response_suffix: str = ""
+    ) -> List[Dict]:
+        """在指定GPU上处理一批prompt"""
+        # 设置随机种子确保结果一致性
+        import random
+        import numpy as np
+        random.seed(seed)
+        np.random.seed(seed)
+        torch.manual_seed(seed)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed(seed)
+            torch.cuda.manual_seed_all(seed)
+        
+        # 设置当前进程使用的GPU
+        if torch.cuda.is_available():
+            # 确保CUDA已经初始化
+            torch.cuda.init()
+            torch.cuda.set_device(gpu_id)
+        
+        from transformers import AutoModelForCausalLM, AutoTokenizer
+        
+        # 在每个GPU上加载模型和tokenizer
+        model = AutoModelForCausalLM.from_pretrained(
+            pretrained_model_name_or_path=model_name,
+            torch_dtype=dtype,
+            trust_remote_code=trust_remote_code
+        )
+        
+        if torch.cuda.is_available():
+            model = model.cuda()
+        
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        if tokenizer.pad_token is None:
+            tokenizer.pad_token = tokenizer.eos_token
+            tokenizer.pad_token_id = tokenizer.eos_token_id
+        
+        # 检查是否为chat模型
+        def is_chat():
+            if model_type == "Chat":
+                if tokenizer.chat_template is None:
+                    logger.error("When the model type is Chat, the chat template must be set for the tokenizer.")
+                else:
+                    return True
+            else:
+                return False
+        
+        generation_set = []
+        
+        for prompt in prompt_batch:
+            # Tokenize input
+            input_text = make_chat_template(
+                prompt=prompt['prompt'],
+                response_prefix=response_prefix,
+                is_chat=is_chat(),
+                tokenizer=tokenizer
+            )
+
+            inputs_tokens = tokenizer(
+                input_text,
+                return_tensors="pt"
+            )
+
+            # Move inputs to GPU if model is on GPU
+            if torch.cuda.is_available():
+                inputs_tokens = {k: v.to(model.device) for k, v in inputs_tokens.items()}
+
+            # Generate
+            sampling_params = sampling_params.copy()
+            sampling_params['max_new_tokens'] = max_tokens
+
+            outputs = model.generate(
+                **inputs_tokens,
+                **sampling_params
+            )
+
+            # Decode each generated sequence
+            for completion_idx, output in enumerate(outputs):
+                completion = tokenizer.decode(output, skip_special_tokens=True)
+                completion = completion.split(input_text)[-1]
+                # 处理stop tokens
+                completion = stop_at_stop_token_static(completion, stop_tokens)
+                completion = refine_text(completion)
+                if not is_chat():
+                    completion = input_text + completion
+                
+                generation_set.append({
+                    'task_id': prompt['task_id'],
+                    'completion_id': completion_idx,
+                    'completion': completion,
+                })
+        
+        # 清理GPU内存
+        del model
+        del tokenizer
+        torch.cuda.empty_cache()
+        
+        return generation_set
 
     def generate(
             self,
@@ -107,57 +230,82 @@ class TransformerGenerator(Generator):
         ) -> List[str]:
 
         logger.info(f"Example Prompt:\n{prompt_set[0]['prompt']}")
+        logger.info(f"Processing {len(prompt_set)} prompts on {self.num_gpus} GPUs")
 
-        generation_set = []
-
-        for prompt in tqdm(prompt_set):
-            # Tokenize input
-            input_text = make_chat_template(
-                prompt = prompt['prompt'],
-                response_prefix = "",
-                is_chat = self.is_chat(),
-                tokenizer = self.tokenizer
+        if self.num_gpus <= 1:
+            # 单GPU或CPU处理
+            return self._process_batch_on_gpu(
+                0,
+                prompt_set,
+                self.model_name,
+                self.model_type,
+                self.dtype,
+                self.trust_remote_code,
+                self.sampling_params,
+                self.max_tokens,
+                getattr(self, 'stop_tokens', []),
+                self.seed, 
+                response_prefix,
+                response_suffix
             )
-
-            inputs_tokens = self.tokenizer(
-                input_text,
-                return_tensors="pt"
-            )
-
-            # Move inputs to GPU if model is on GPU
-            if torch.cuda.is_available():
-                # Move inputs_ids and attention_mask to GPU
-                inputs_tokens = {k: v.to(self.model.device) for k, v in inputs_tokens.items()}
-
-            # shape[0] is the batch size, shape[1] is the sequence length
-            self.sampling_params['max_new_tokens'] = 256
-
-            outputs = self.model.generate(
-                **inputs_tokens,
-                **self.sampling_params
-            )
-
-
-            # Decode each generated sequence
-            for completion_idx, output in enumerate(outputs):
-                # Decode the generated tokens (skip the input tokens)
-                completion = self.tokenizer.decode(output, skip_special_tokens=True)
-                completion = completion.split(input_text)[-1]
-                completion = self._stop_at_stop_token(completion, self.stop_tokens)
-                completion = refine_text(completion)
-                if not self.is_chat():
-                    completion = input_text + completion
-                logger.info(f"Refined Completion:\n{completion}")
-                
-                generation_set.append({
-                    'task_id': prompt['task_id'],
-                    'completion_id': completion_idx,
-                    'completion': completion,
-                })
-
+        
+        # 多GPU并行处理
+        # 将prompt_set分成多个批次，每个GPU处理一部分
+        batch_size = len(prompt_set) // self.num_gpus
+        if len(prompt_set) % self.num_gpus != 0:
+            batch_size += 1
+        
+        prompt_batches = []
+        for i in range(0, len(prompt_set), batch_size):
+            prompt_batches.append(prompt_set[i:i + batch_size])
+        
+        # 确保批次数量不超过GPU数量
+        while len(prompt_batches) < self.num_gpus:
+            prompt_batches.append([])
+        
+        # 使用多进程在多个GPU上并行处理
+        # 临时设置spawn启动方法，仅用于这个进程池
+        original_start_method = mp.get_start_method()
+        try:
+            mp.set_start_method('spawn', force=True)
+        except RuntimeError:
+            pass
+            
+        with mp.Pool(processes=self.num_gpus) as pool:
+            # 并行处理每个批次
+            results = []
+            for gpu_id, prompt_batch in enumerate(prompt_batches):
+                if prompt_batch:  # 只处理非空批次
+                    result = pool.apply_async(
+                        self._process_batch_on_gpu, 
+                        args=(
+                            gpu_id,
+                            prompt_batch,
+                            self.model_name,
+                            self.model_type,
+                            self.dtype,
+                            self.trust_remote_code,
+                            self.sampling_params,
+                            self.max_tokens,
+                            getattr(self, 'stop_tokens', []),
+                            self.seed,
+                            response_prefix,
+                            response_suffix)
+                    )
+                    results.append((gpu_id, result))
+            
+            # 按GPU ID顺序收集所有结果，确保顺序一致
+            generation_set = []
+            for gpu_id, result in sorted(results, key=lambda x: x[0]):
+                generation_set.extend(result.get())
+        
+        # 恢复原来的multiprocessing启动方法
+        try:
+            mp.set_start_method(original_start_method, force=True)
+        except RuntimeError:
+            pass
+        
         if len(generation_set) != len(prompt_set) * self.num_samples:
             logger.error("Number of generations does not match the expected number.")
-
-        self.release_memory()
 
         return generation_set

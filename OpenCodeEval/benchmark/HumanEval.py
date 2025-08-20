@@ -69,11 +69,13 @@ class HumanEval(Benchmark):
         Postprocess the generations.
         """
 
+        prompt = self.tasks[generation['task_id']]['prompt']
         entry_point = self.tasks[generation['task_id']]["entry_point"]
+        prompt_lines  = len([line for line in prompt.splitlines() if line.strip()])
 
         try:
             lines = generation['completion'].splitlines()
-            lines = [line for line in lines if line.strip()][:20]
+            lines = [line for line in lines if line.strip()][:prompt_lines + 20]
             completion = '\n'.join(lines)
 
             if '</think>' in completion:
