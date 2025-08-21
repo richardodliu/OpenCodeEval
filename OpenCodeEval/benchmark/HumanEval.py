@@ -59,7 +59,8 @@ class HumanEval(Benchmark):
             prompts.append(
                 dict(
                     task_id = task_id,
-                    prompt = refine_text(task_data['prompt'])
+                    # prompt = refine_text(task_data['prompt'])
+                    prompt = task_data['prompt']
                 )
             )
         return prompts

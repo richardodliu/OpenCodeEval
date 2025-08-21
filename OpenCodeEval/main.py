@@ -25,7 +25,8 @@ def main():
     prompts = task.get_prompt()
 
     for prompt in prompts:
-        prompt['prompt'] = refine_text(args.prompt_prefix + prompt['prompt'] + args.prompt_suffix)
+        # prompt['prompt'] = refine_text(args.prompt_prefix + prompt['prompt'] + args.prompt_suffix)
+        prompt['prompt'] = args.prompt_prefix + prompt['prompt'] + args.prompt_suffix
     prompts = sorted(prompts, key = lambda x: x['task_id'])
     write_jsonl(os.path.join(save_path, "prompts.jsonl"), prompts)
 

@@ -2,10 +2,7 @@ import os
 import sys
 import fla
 import torch
-import multiprocessing as mp
-from functools import partial
-
-# 不在这里全局设置multiprocessing启动方法，避免影响其他模块
+import multiprocessing
 
 from tqdm import tqdm
 from loguru import logger
@@ -44,7 +41,7 @@ class TransformerGenerator(Generator):
         num_samples: int = 200,
         num_gpus: int = 1,
         trust_remote_code: bool = True,
-        seed: int = 42
+        seed: int = 0
     ) -> None:
 
         super().__init__(model_name)
@@ -61,6 +58,8 @@ class TransformerGenerator(Generator):
         self.num_gpus = num_gpus
         self.trust_remote_code = trust_remote_code
         self.seed = seed
+
+        logger.info(f"Initializing with seed: {seed}")
 
         if self.batch_size != 1:
             logger.warning(f"Batch size must be 1 for transformer, but got {self.batch_size}")
@@ -83,10 +82,14 @@ class TransformerGenerator(Generator):
         print(f"Initializing with num_samples: {self.num_samples}, num_gpus: {self.num_gpus}")
         self.sampling_params = dict(
             do_sample = self.temperature > 0,
-            temperature = self.temperature,
             top_p = self.top_p,
             num_return_sequences = self.num_samples,
+            top_k = 0
         )
+        
+        # 只有当温度大于0时才添加温度参数
+        if self.temperature > 0:
+            self.sampling_params['temperature'] = self.temperature
     
     def is_chat(self) -> bool:
         if self.model_type == "Chat":
@@ -136,6 +139,12 @@ class TransformerGenerator(Generator):
         if torch.cuda.is_available():
             torch.cuda.manual_seed(seed)
             torch.cuda.manual_seed_all(seed)
+            # 设置确定性模式
+            torch.backends.cudnn.deterministic = True
+            torch.backends.cudnn.benchmark = False
+            # 设置更多确定性选项
+            torch.use_deterministic_algorithms(True)
+            os.environ['CUBLAS_WORKSPACE_CONFIG'] = ':4096:8'
         
         # 设置当前进程使用的GPU
         if torch.cuda.is_available():
@@ -149,11 +158,17 @@ class TransformerGenerator(Generator):
         model = AutoModelForCausalLM.from_pretrained(
             pretrained_model_name_or_path=model_name,
             torch_dtype=dtype,
-            trust_remote_code=trust_remote_code
+            trust_remote_code=trust_remote_code,
+            # 确保模型加载的确定性
+            low_cpu_mem_usage=False,
+            device_map=None
         )
         
         if torch.cuda.is_available():
             model = model.cuda()
+        
+        # 确保模型处于评估模式
+        model.eval()
         
         tokenizer = AutoTokenizer.from_pretrained(model_name)
         if tokenizer.pad_token is None:
@@ -169,10 +184,17 @@ class TransformerGenerator(Generator):
                     return True
             else:
                 return False
-        
+
+        if gpu_id == 0:
+            logger.info(f"Sampling params: {sampling_params}")
+            logger.info(f"Stop tokens: {stop_tokens}")
+            logger.info(f"Model dtype: {model.dtype}")
+            logger.info(f"Model device: {next(model.parameters()).device}")
+            logger.info(f"Model mode: {model.training}")
+
         generation_set = []
         
-        for prompt in prompt_batch:
+        for prompt in tqdm(prompt_batch, desc=f"GPU {gpu_id} Processing", leave=False):
             # Tokenize input
             input_text = make_chat_template(
                 prompt=prompt['prompt'],
@@ -185,6 +207,7 @@ class TransformerGenerator(Generator):
                 input_text,
                 return_tensors="pt"
             )
+            # logger.info(f"Inputs Tokens:\n{inputs_tokens}")
 
             # Move inputs to GPU if model is on GPU
             if torch.cuda.is_available():
@@ -201,13 +224,18 @@ class TransformerGenerator(Generator):
 
             # Decode each generated sequence
             for completion_idx, output in enumerate(outputs):
-                completion = tokenizer.decode(output, skip_special_tokens=True)
+                completion = tokenizer.decode(output, skip_special_tokens=False)
+                logger.info(f"Original Completion:\n{completion}")
                 completion = completion.split(input_text)[-1]
+                logger.info(f"After Prompt Completion:\n{completion}")
                 # 处理stop tokens
                 completion = stop_at_stop_token_static(completion, stop_tokens)
+                logger.info(f"After Stop Tokens Completion:\n{completion}")
                 completion = refine_text(completion)
+                logger.info(f"After Refine Completion:\n{completion}")
                 if not is_chat():
                     completion = input_text + completion
+                logger.info(f"Saved Completion:\n{completion}")
                 
                 generation_set.append({
                     'task_id': prompt['task_id'],
@@ -265,13 +293,13 @@ class TransformerGenerator(Generator):
         
         # 使用多进程在多个GPU上并行处理
         # 临时设置spawn启动方法，仅用于这个进程池
-        original_start_method = mp.get_start_method()
+        original_start_method = multiprocessing.get_start_method()
         try:
-            mp.set_start_method('spawn', force=True)
+            multiprocessing.set_start_method('spawn', force=True)
         except RuntimeError:
             pass
             
-        with mp.Pool(processes=self.num_gpus) as pool:
+        with multiprocessing.Pool(processes=self.num_gpus) as pool:
             # 并行处理每个批次
             results = []
             for gpu_id, prompt_batch in enumerate(prompt_batches):
@@ -296,12 +324,13 @@ class TransformerGenerator(Generator):
             
             # 按GPU ID顺序收集所有结果，确保顺序一致
             generation_set = []
-            for gpu_id, result in sorted(results, key=lambda x: x[0]):
+            logger.info("Collecting results from all GPUs...")
+            for gpu_id, result in tqdm(sorted(results, key=lambda x: x[0]), desc="GPU Processing", total=len(results)):
                 generation_set.extend(result.get())
         
         # 恢复原来的multiprocessing启动方法
         try:
-            mp.set_start_method(original_start_method, force=True)
+            multiprocessing.set_start_method(original_start_method, force=True)
         except RuntimeError:
             pass
         
