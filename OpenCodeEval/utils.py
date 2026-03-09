@@ -10,15 +10,24 @@ from collections import defaultdict
 from typing import Dict, List, Union, Iterable, Callable, Literal
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-def refine_text(text: str, add_new_line: bool = True) -> str:
+def refine_text(text: str, trailing_newlines: int = 1) -> str:
+
+    text = text.replace('\u00a0', ' ')
+
+    # 1) normalize tabs
     text = text.replace("\t", "    ")
-    # only remove empty lines, but keep the orginal text structure
-    lines = [line for line in text.splitlines() if line.strip()]
-    text = "\n".join(lines)
-    if add_new_line:
-        return text + "\n"
-    else:
-        return text
+
+    # 2) normalize line endings: CRLF / CR -> LF
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
+
+    # 3) keep \n and \n\n; compress 3+ newlines to exactly \n\n
+    text = re.sub(r"\n{3,}", "\n\n", text)
+
+    # 4) force trailing newline count
+    text = text.rstrip("\n")
+    if trailing_newlines > 0:
+        text += "\n" * trailing_newlines
+    return text
 
 def multi_process_function(function: Callable,
                            parameters: List,

@@ -80,8 +80,7 @@ def main():
 
 
     # post-process generations
-    # if not os.path.exists(os.path.join(save_path, "solutions.jsonl")):
-    if True:
+    if not os.path.exists(os.path.join(save_path, "solutions.jsonl")):
 
         generations = list(stream_jsonl(os.path.join(save_path, "generations.jsonl")))
         solutions = thread_map(
@@ -94,8 +93,7 @@ def main():
         write_jsonl(os.path.join(save_path, "solutions.jsonl"), solutions)
 
     # evaluate solutions
-    # if not os.path.exists(os.path.join(save_path, "evaluations.jsonl")):
-    if True:
+    if not os.path.exists(os.path.join(save_path, "evaluations.jsonl")):
         solutions = list(stream_jsonl(os.path.join(save_path, "solutions.jsonl")))
         evaluations = thread_map(
             task.process_results,
@@ -107,8 +105,7 @@ def main():
         write_jsonl(os.path.join(save_path, "evaluations.jsonl"), evaluations)
 
     # calculate pass@k
-    # if not os.path.exists(os.path.join(save_path, "results.jsonl")):
-    if True:
+    if not os.path.exists(os.path.join(save_path, "results.jsonl")):
         evaluations = list(stream_jsonl(os.path.join(save_path, "evaluations.jsonl")))
         results = calculate_pass_at_k(evaluations, args.num_samples, args.list_k)
         write_jsonl(os.path.join(save_path, "results.jsonl"), results)

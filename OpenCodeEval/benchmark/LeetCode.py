@@ -3,7 +3,7 @@ from typing import Literal
 from loguru import logger
 
 from OpenCodeEval.benchmark.base import Benchmark, PYTHON_IMPORTS, LEETCODE_IMPORTS, PYTHON_STOP
-from OpenCodeEval.utils import refine_text, stream_jsonl
+from OpenCodeEval.utils import refine_text, stream_jsonl, program_extract
 from OpenCodeEval.eval.func_eval import check_correctness
 from OpenCodeEval.eval.sanitize import sanitize
 class LeetCode(Benchmark):
@@ -16,14 +16,13 @@ class LeetCode(Benchmark):
 
     def __init__(
         self,
-        split: Literal["contest", "train", "validation", "test"] = "contest",
+        split: Literal["contest", "train", "test"] = "contest",
         time_out: float = 3.0,
         prompt_type: Literal["Completion", "Instruction"] = "Instruction"
     ):
 
         super().__init__()
         
-        self.name = name
         self.split = split
         self.time_out = time_out
 
@@ -46,7 +45,7 @@ class LeetCode(Benchmark):
             if self.split == "contest":
                 task_id = int(task_data["meta"]["questionId"])
             else:
-                task_id = int(task_data["meta"]["question_id"])
+                task_id = int(task_data["question_id"])
             tasks[task_id] = task_data
         
         return tasks
@@ -65,7 +64,7 @@ class LeetCode(Benchmark):
                 elif self.prompt_type == "Instruction":
                     prompt = task_data['prompt_sft']
             else:
-                prompt = task_data['meta']['query']
+                prompt = task_data['query']
 
             prompts.append(
                 dict(
@@ -81,13 +80,16 @@ class LeetCode(Benchmark):
         Postprocess the generations.
         """
 
+        solution_program = program_extract(generation['completion'], program="python", mode="first")
+        solution_program = sanitize(
+            text = solution_program,
+            entrypoint = "Solution",
+        )
+
         return dict(
             task_id = generation['task_id'],
             completion_id = generation['completion_id'],
-            solution = sanitize(
-                text = generation['completion'],
-                entrypoint = "Solution",
-            )
+            solution = solution_program
         )
     
     def process_results(self, solution):
@@ -106,7 +108,8 @@ class LeetCode(Benchmark):
         else:
             code = (
                 "\n".join(self.imports_code) + "\n\n"
-                + task_data['meta']['lang_code'] + "\n"
+                + task_data['prompt'] + "\n"
+                + task_data['starter_code'] + "\n"
                 + "        pass\n" + "\n"
                 + solution['solution'] + "\n"
                 + task_data['test'] + "\n"

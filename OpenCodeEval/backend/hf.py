@@ -1,6 +1,6 @@
 import os
 import sys
-import fla
+# import fla
 import torch
 import multiprocessing
 
@@ -197,9 +197,9 @@ class TransformerGenerator(Generator):
         for prompt in tqdm(prompt_batch, desc=f"GPU {gpu_id} Processing", leave=False):
             # Tokenize input
             input_text = make_chat_template(
-                prompt=prompt['prompt'],
+                prompt=prompt['prompt'].strip() + "\n    ",
                 response_prefix=response_prefix,
-                is_chat=is_chat(),
+                is_chat = is_chat(),
                 tokenizer=tokenizer
             )
 
@@ -207,7 +207,7 @@ class TransformerGenerator(Generator):
                 input_text,
                 return_tensors="pt"
             )
-            # logger.info(f"Inputs Tokens:\n{inputs_tokens}")
+            logger.info(f"Inputs Tokens:\n{inputs_tokens}")
 
             # Move inputs to GPU if model is on GPU
             if torch.cuda.is_available():
@@ -234,6 +234,10 @@ class TransformerGenerator(Generator):
                 completion = refine_text(completion)
                 logger.info(f"After Refine Completion:\n{completion}")
                 if not is_chat():
+                    # if completion.startswith("\n"):
+                    #     completion = input_text + completion
+                    # else:
+                    #     completion = input_text + "\n" + completion
                     completion = input_text + completion
                 logger.info(f"Saved Completion:\n{completion}")
                 

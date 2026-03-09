@@ -81,7 +81,6 @@ class VllmGenerator(Generator):
 
         destroy_model_parallel
         destroy_distributed_environment()
-        del self.model.llm_engine.model_executor
         del self.model
         gc.collect()
         torch.cuda.empty_cache()
@@ -106,12 +105,12 @@ class VllmGenerator(Generator):
 
         generation_set = []
 
-        for batch_start in tqdm(range(0, len(prompt_set), self.batch_size)):
+        for batch_start in range(0, len(prompt_set), self.batch_size):
             batch_prompt = prompt_set[batch_start : batch_start + self.batch_size]
             batch_outputs = self.model.generate(
                 [prompt['prompt'] for prompt in batch_prompt],
                 self.sampling_params,
-                use_tqdm = False,
+                use_tqdm = True,
             )
 
             for prompt, output in zip(batch_prompt, batch_outputs):

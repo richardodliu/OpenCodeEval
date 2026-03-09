@@ -1,0 +1,400 @@
+2026-01-26 11:53:17.577 | INFO     | __main__:<module>:319 - ================================================================================
+2026-01-26 11:53:17.577 | INFO     | __main__:<module>:320 - PARALLEL EVALUATION CONFIGURATION
+2026-01-26 11:53:17.577 | INFO     | __main__:<module>:321 - ================================================================================
+2026-01-26 11:53:17.577 | INFO     | __main__:<module>:322 - Checkpoint directory: /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity
+2026-01-26 11:53:17.577 | INFO     | __main__:<module>:323 - Config path: config/leetcode.json
+2026-01-26 11:53:17.577 | INFO     | __main__:<module>:324 - Benchmark configs: ['leetcode_train', 'leetcode_test']
+2026-01-26 11:53:17.577 | INFO     | __main__:<module>:325 - GPUs per checkpoint: 1
+2026-01-26 11:53:17.577 | INFO     | __main__:<module>:326 - Workers per checkpoint: 4
+2026-01-26 11:53:17.577 | INFO     | __main__:<module>:327 - Max parallel tasks: auto
+2026-01-26 11:53:17.577 | INFO     | __main__:<module>:328 - Feishu notification: False
+2026-01-26 11:53:17.577 | INFO     | __main__:<module>:329 - ================================================================================
+2026-01-26 11:53:25,329	INFO worker.py:1918 -- Started a local Ray instance. View the dashboard at [1m[32mhttp://127.0.0.1:8265 [39m[22m
+2026-01-26 11:53:27.542 | INFO     | __main__:parallel_evaluate:232 - Available GPUs (from Ray): 8
+2026-01-26 11:53:27.548 | INFO     | __main__:parallel_evaluate:242 - Found 12 valid checkpoints: ['checkpoint-600', 'checkpoint-550', 'checkpoint-500', 'checkpoint-450', 'checkpoint-400', 'checkpoint-350', 'checkpoint-300', 'checkpoint-250', 'checkpoint-200', 'checkpoint-150', 'checkpoint-100', 'checkpoint-50']
+2026-01-26 11:53:27.548 | INFO     | __main__:parallel_evaluate:249 - Max parallel tasks: 8
+2026-01-26 11:53:27.548 | INFO     | __main__:parallel_evaluate:250 - Starting parallel evaluation: 12 checkpoints, 1 GPUs per ckpt
+2026-01-26 11:53:29.851 | INFO     | __main__:parallel_evaluate:263 - Waiting for all evaluation tasks to complete...
+[36m(evaluate_checkpoint pid=196178)[0m 2026-01-26 11:53:30.098 | INFO     | __main__:evaluate_checkpoint:155 - [checkpoint-600] Starting evaluation with 2 benchmarks
+[36m(evaluate_checkpoint pid=196178)[0m 2026-01-26 11:53:30.098 | INFO     | __main__:eval_finish:47 - benchmark leetcode_train directory has not been created
+[36m(evaluate_checkpoint pid=196178)[0m 2026-01-26 11:53:30.098 | INFO     | __main__:evaluate_checkpoint:171 - [checkpoint-600][leetcode_train] Starting evaluation
+[36m(evaluate_checkpoint pid=196178)[0m 2026-01-26 11:53:30.098 | INFO     | __main__:evaluate_checkpoint:176 - [checkpoint-600][leetcode_train] cmd: OpenCodeEval    --model_name /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/checkpoint-600 \
+[36m(evaluate_checkpoint pid=196178)[0m                 --save_path /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/eval/checkpoint-600/leetcode_train \
+[36m(evaluate_checkpoint pid=196178)[0m                 --task LeetCode \
+[36m(evaluate_checkpoint pid=196178)[0m                 --backend vllm \
+[36m(evaluate_checkpoint pid=196178)[0m                 --split train \
+[36m(evaluate_checkpoint pid=196178)[0m                 --batch_size 2641 \
+[36m(evaluate_checkpoint pid=196178)[0m                 --temperature 0.0 \
+[36m(evaluate_checkpoint pid=196178)[0m                 --num_samples 1 \
+[36m(evaluate_checkpoint pid=196178)[0m                 --list_k 1 \
+[36m(evaluate_checkpoint pid=196178)[0m                 --num_gpus 1 \
+[36m(evaluate_checkpoint pid=196178)[0m                 --num_workers 4 \
+[36m(evaluate_checkpoint pid=196178)[0m                 --max_tokens 1024 \
+[36m(evaluate_checkpoint pid=196178)[0m                 --time_out 3 \
+[36m(evaluate_checkpoint pid=196178)[0m                 --prompt_type Instruction \
+[36m(evaluate_checkpoint pid=196178)[0m                 --model_type Chat \
+[36m(evaluate_checkpoint pid=196178)[0m                 --prompt_prefix '' \
+[36m(evaluate_checkpoint pid=196178)[0m                 --prompt_suffix '' \
+[36m(evaluate_checkpoint pid=196178)[0m                 --trust_remote_code
+[36m(evaluate_checkpoint pid=196178)[0m 2026-01-26 12:03:00.229 | INFO     | __main__:evaluate_checkpoint:183 - [checkpoint-600][leetcode_train] Completed successfully
+[36m(evaluate_checkpoint pid=196178)[0m 2026-01-26 12:03:00.229 | INFO     | __main__:eval_finish:47 - benchmark leetcode_test directory has not been created
+[36m(evaluate_checkpoint pid=196178)[0m                 --split test \
+[36m(evaluate_checkpoint pid=196183)[0m 2026-01-26 11:53:30.036 | INFO     | __main__:evaluate_checkpoint:155 - [checkpoint-250] Starting evaluation with 2 benchmarks[32m [repeated 7x across cluster] (Ray deduplicates logs by default. Set RAY_DEDUP_LOGS=0 to disable log deduplication, or see https://docs.ray.io/en/master/ray-observability/user-guides/configure-logging.html#log-deduplication for more options.)[0m
+[36m(evaluate_checkpoint pid=196183)[0m 2026-01-26 11:53:30.036 | INFO     | __main__:eval_finish:47 - benchmark leetcode_train directory has not been created[32m [repeated 7x across cluster][0m
+[36m(evaluate_checkpoint pid=196178)[0m 2026-01-26 12:03:00.229 | INFO     | __main__:evaluate_checkpoint:171 - [checkpoint-600][leetcode_test] Starting evaluation[32m [repeated 8x across cluster][0m
+[36m(evaluate_checkpoint pid=196178)[0m 2026-01-26 12:03:00.229 | INFO     | __main__:evaluate_checkpoint:176 - [checkpoint-600][leetcode_test] cmd: OpenCodeEval    --model_name /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/checkpoint-600 \[32m [repeated 8x across cluster][0m
+[36m(evaluate_checkpoint pid=196178)[0m                 --save_path /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/eval/checkpoint-600/leetcode_test \[32m [repeated 8x across cluster][0m
+[36m(evaluate_checkpoint pid=196178)[0m                 --task LeetCode \[32m [repeated 8x across cluster][0m
+[36m(evaluate_checkpoint pid=196178)[0m                 --backend vllm \[32m [repeated 8x across cluster][0m
+[36m(evaluate_checkpoint pid=196183)[0m                 --split train \[32m [repeated 7x across cluster][0m
+[36m(evaluate_checkpoint pid=196178)[0m                 --batch_size 2280 \[32m [repeated 8x across cluster][0m
+[36m(evaluate_checkpoint pid=196178)[0m                 --temperature 1.0 \[32m [repeated 8x across cluster][0m
+[36m(evaluate_checkpoint pid=196178)[0m                 --num_samples 10 \[32m [repeated 8x across cluster][0m
+[36m(evaluate_checkpoint pid=196178)[0m                 --list_k 1,2,3,4,5,6,7,8,9,10 \[32m [repeated 8x across cluster][0m
+[36m(evaluate_checkpoint pid=196178)[0m                 --num_gpus 1 \[32m [repeated 8x across cluster][0m
+[36m(evaluate_checkpoint pid=196178)[0m                 --num_workers 4 \[32m [repeated 8x across cluster][0m
+[36m(evaluate_checkpoint pid=196178)[0m                 --max_tokens 1024 \[32m [repeated 8x across cluster][0m
+[36m(evaluate_checkpoint pid=196178)[0m                 --time_out 3 \[32m [repeated 8x across cluster][0m
+[36m(evaluate_checkpoint pid=196178)[0m                 --prompt_type Instruction \[32m [repeated 8x across cluster][0m
+[36m(evaluate_checkpoint pid=196178)[0m                 --model_type Chat \[32m [repeated 8x across cluster][0m
+[36m(evaluate_checkpoint pid=196178)[0m                 --prompt_prefix '' \[32m [repeated 8x across cluster][0m
+[36m(evaluate_checkpoint pid=196178)[0m                 --prompt_suffix '' \[32m [repeated 8x across cluster][0m
+[36m(evaluate_checkpoint pid=196178)[0m                 --trust_remote_code[32m [repeated 8x across cluster][0m
+[36m(evaluate_checkpoint pid=196182)[0m 2026-01-26 12:03:05.228 | INFO     | __main__:evaluate_checkpoint:183 - [checkpoint-450][leetcode_train] Completed successfully
+[36m(evaluate_checkpoint pid=196182)[0m 2026-01-26 12:03:05.228 | INFO     | __main__:eval_finish:47 - benchmark leetcode_test directory has not been created
+[36m(evaluate_checkpoint pid=196182)[0m                 --split test \
+[36m(evaluate_checkpoint pid=196182)[0m 2026-01-26 12:03:05.228 | INFO     | __main__:evaluate_checkpoint:171 - [checkpoint-450][leetcode_test] Starting evaluation
+[36m(evaluate_checkpoint pid=196182)[0m 2026-01-26 12:03:05.228 | INFO     | __main__:evaluate_checkpoint:176 - [checkpoint-450][leetcode_test] cmd: OpenCodeEval    --model_name /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/checkpoint-450 \
+[36m(evaluate_checkpoint pid=196182)[0m                 --save_path /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/eval/checkpoint-450/leetcode_test \
+[36m(evaluate_checkpoint pid=196182)[0m                 --task LeetCode \
+[36m(evaluate_checkpoint pid=196182)[0m                 --backend vllm \
+[36m(evaluate_checkpoint pid=196182)[0m                 --batch_size 2280 \
+[36m(evaluate_checkpoint pid=196182)[0m                 --temperature 1.0 \
+[36m(evaluate_checkpoint pid=196182)[0m                 --num_samples 10 \
+[36m(evaluate_checkpoint pid=196182)[0m                 --list_k 1,2,3,4,5,6,7,8,9,10 \
+[36m(evaluate_checkpoint pid=196182)[0m                 --num_gpus 1 \
+[36m(evaluate_checkpoint pid=196182)[0m                 --num_workers 4 \
+[36m(evaluate_checkpoint pid=196182)[0m                 --max_tokens 1024 \
+[36m(evaluate_checkpoint pid=196182)[0m                 --time_out 3 \
+[36m(evaluate_checkpoint pid=196182)[0m                 --prompt_type Instruction \
+[36m(evaluate_checkpoint pid=196182)[0m                 --model_type Chat \
+[36m(evaluate_checkpoint pid=196182)[0m                 --prompt_prefix '' \
+[36m(evaluate_checkpoint pid=196182)[0m                 --prompt_suffix '' \
+[36m(evaluate_checkpoint pid=196182)[0m                 --trust_remote_code
+[36m(evaluate_checkpoint pid=196183)[0m 2026-01-26 12:03:05.622 | INFO     | __main__:evaluate_checkpoint:183 - [checkpoint-250][leetcode_train] Completed successfully
+[36m(evaluate_checkpoint pid=196183)[0m 2026-01-26 12:03:05.622 | INFO     | __main__:eval_finish:47 - benchmark leetcode_test directory has not been created
+[36m(evaluate_checkpoint pid=196183)[0m 2026-01-26 12:03:05.622 | INFO     | __main__:evaluate_checkpoint:171 - [checkpoint-250][leetcode_test] Starting evaluation
+[36m(evaluate_checkpoint pid=196183)[0m 2026-01-26 12:03:05.622 | INFO     | __main__:evaluate_checkpoint:176 - [checkpoint-250][leetcode_test] cmd: OpenCodeEval    --model_name /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/checkpoint-250 \
+[36m(evaluate_checkpoint pid=196183)[0m                 --save_path /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/eval/checkpoint-250/leetcode_test \
+[36m(evaluate_checkpoint pid=196183)[0m                 --task LeetCode \
+[36m(evaluate_checkpoint pid=196183)[0m                 --backend vllm \
+[36m(evaluate_checkpoint pid=196183)[0m                 --split test \
+[36m(evaluate_checkpoint pid=196183)[0m                 --batch_size 2280 \
+[36m(evaluate_checkpoint pid=196183)[0m                 --temperature 1.0 \
+[36m(evaluate_checkpoint pid=196183)[0m                 --num_samples 10 \
+[36m(evaluate_checkpoint pid=196183)[0m                 --list_k 1,2,3,4,5,6,7,8,9,10 \
+[36m(evaluate_checkpoint pid=196183)[0m                 --num_gpus 1 \
+[36m(evaluate_checkpoint pid=196183)[0m                 --num_workers 4 \
+[36m(evaluate_checkpoint pid=196183)[0m                 --max_tokens 1024 \
+[36m(evaluate_checkpoint pid=196183)[0m                 --time_out 3 \
+[36m(evaluate_checkpoint pid=196183)[0m                 --prompt_type Instruction \
+[36m(evaluate_checkpoint pid=196183)[0m                 --model_type Chat \
+[36m(evaluate_checkpoint pid=196183)[0m                 --prompt_prefix '' \
+[36m(evaluate_checkpoint pid=196183)[0m                 --prompt_suffix '' \
+[36m(evaluate_checkpoint pid=196183)[0m                 --trust_remote_code
+[36m(evaluate_checkpoint pid=196188)[0m 2026-01-26 12:03:12.956 | INFO     | __main__:evaluate_checkpoint:183 - [checkpoint-300][leetcode_train] Completed successfully[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196188)[0m 2026-01-26 12:03:12.958 | INFO     | __main__:eval_finish:47 - benchmark leetcode_test directory has not been created[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196188)[0m 2026-01-26 12:03:12.958 | INFO     | __main__:evaluate_checkpoint:171 - [checkpoint-300][leetcode_test] Starting evaluation[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196188)[0m 2026-01-26 12:03:12.958 | INFO     | __main__:evaluate_checkpoint:176 - [checkpoint-300][leetcode_test] cmd: OpenCodeEval    --model_name /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/checkpoint-300 \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196188)[0m                 --save_path /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/eval/checkpoint-300/leetcode_test \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196188)[0m                 --task LeetCode \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196188)[0m                 --backend vllm \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196188)[0m                 --split test \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196188)[0m                 --batch_size 2280 \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196188)[0m                 --temperature 1.0 \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196188)[0m                 --num_samples 10 \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196188)[0m                 --list_k 1,2,3,4,5,6,7,8,9,10 \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196188)[0m                 --num_gpus 1 \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196188)[0m                 --num_workers 4 \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196188)[0m                 --max_tokens 1024 \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196188)[0m                 --time_out 3 \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196188)[0m                 --prompt_type Instruction \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196188)[0m                 --model_type Chat \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196188)[0m                 --prompt_prefix '' \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196188)[0m                 --prompt_suffix '' \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196188)[0m                 --trust_remote_code[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196180)[0m 2026-01-26 12:03:20.725 | INFO     | __main__:evaluate_checkpoint:183 - [checkpoint-400][leetcode_train] Completed successfully[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196180)[0m 2026-01-26 12:03:20.725 | INFO     | __main__:eval_finish:47 - benchmark leetcode_test directory has not been created[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196180)[0m 2026-01-26 12:03:20.725 | INFO     | __main__:evaluate_checkpoint:171 - [checkpoint-400][leetcode_test] Starting evaluation[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196180)[0m 2026-01-26 12:03:20.725 | INFO     | __main__:evaluate_checkpoint:176 - [checkpoint-400][leetcode_test] cmd: OpenCodeEval    --model_name /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/checkpoint-400 \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196180)[0m                 --save_path /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/eval/checkpoint-400/leetcode_test \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196180)[0m                 --task LeetCode \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196180)[0m                 --backend vllm \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196180)[0m                 --split test \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196180)[0m                 --batch_size 2280 \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196180)[0m                 --temperature 1.0 \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196180)[0m                 --num_samples 10 \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196180)[0m                 --list_k 1,2,3,4,5,6,7,8,9,10 \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196180)[0m                 --num_gpus 1 \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196180)[0m                 --num_workers 4 \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196180)[0m                 --max_tokens 1024 \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196180)[0m                 --time_out 3 \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196180)[0m                 --prompt_type Instruction \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196180)[0m                 --model_type Chat \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196180)[0m                 --prompt_prefix '' \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196180)[0m                 --prompt_suffix '' \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196180)[0m                 --trust_remote_code[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196181)[0m 2026-01-26 12:03:36.166 | INFO     | __main__:evaluate_checkpoint:183 - [checkpoint-550][leetcode_train] Completed successfully
+[36m(evaluate_checkpoint pid=196181)[0m 2026-01-26 12:03:36.167 | INFO     | __main__:eval_finish:47 - benchmark leetcode_test directory has not been created
+[36m(evaluate_checkpoint pid=196181)[0m 2026-01-26 12:03:36.167 | INFO     | __main__:evaluate_checkpoint:171 - [checkpoint-550][leetcode_test] Starting evaluation
+[36m(evaluate_checkpoint pid=196181)[0m 2026-01-26 12:03:36.167 | INFO     | __main__:evaluate_checkpoint:176 - [checkpoint-550][leetcode_test] cmd: OpenCodeEval    --model_name /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/checkpoint-550 \
+[36m(evaluate_checkpoint pid=196181)[0m                 --save_path /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/eval/checkpoint-550/leetcode_test \
+[36m(evaluate_checkpoint pid=196181)[0m                 --task LeetCode \
+[36m(evaluate_checkpoint pid=196181)[0m                 --backend vllm \
+[36m(evaluate_checkpoint pid=196181)[0m                 --split test \
+[36m(evaluate_checkpoint pid=196181)[0m                 --batch_size 2280 \
+[36m(evaluate_checkpoint pid=196181)[0m                 --temperature 1.0 \
+[36m(evaluate_checkpoint pid=196181)[0m                 --num_samples 10 \
+[36m(evaluate_checkpoint pid=196181)[0m                 --list_k 1,2,3,4,5,6,7,8,9,10 \
+[36m(evaluate_checkpoint pid=196181)[0m                 --num_gpus 1 \
+[36m(evaluate_checkpoint pid=196181)[0m                 --num_workers 4 \
+[36m(evaluate_checkpoint pid=196181)[0m                 --max_tokens 1024 \
+[36m(evaluate_checkpoint pid=196181)[0m                 --time_out 3 \
+[36m(evaluate_checkpoint pid=196181)[0m                 --prompt_type Instruction \
+[36m(evaluate_checkpoint pid=196181)[0m                 --model_type Chat \
+[36m(evaluate_checkpoint pid=196181)[0m                 --prompt_prefix '' \
+[36m(evaluate_checkpoint pid=196181)[0m                 --prompt_suffix '' \
+[36m(evaluate_checkpoint pid=196181)[0m                 --trust_remote_code
+[36m(evaluate_checkpoint pid=196178)[0m 2026-01-26 12:09:35.223 | INFO     | __main__:evaluate_checkpoint:183 - [checkpoint-600][leetcode_test] Completed successfully
+[36m(evaluate_checkpoint pid=196178)[0m 2026-01-26 12:09:35.225 | INFO     | __main__:evaluate_checkpoint:194 - [checkpoint-600][leetcode_train] result: 78.45513063233624
+[36m(evaluate_checkpoint pid=196178)[0m 2026-01-26 12:09:35.225 | INFO     | __main__:evaluate_checkpoint:194 - [checkpoint-600][leetcode_test] result: 12.412280701754385
+[36m(evaluate_checkpoint pid=196178)[0m 2026-01-26 12:09:35.225 | INFO     | __main__:evaluate_checkpoint:198 - [checkpoint-600] Evaluation completed with results: {'leetcode_train': 78.45513063233624, 'leetcode_test': 12.412280701754385}
+[36m(evaluate_checkpoint pid=196178)[0m 2026-01-26 12:09:35.230 | INFO     | __main__:evaluate_checkpoint:155 - [checkpoint-200] Starting evaluation with 2 benchmarks
+[36m(evaluate_checkpoint pid=196178)[0m 2026-01-26 12:09:35.230 | INFO     | __main__:eval_finish:47 - benchmark leetcode_train directory has not been created
+[36m(evaluate_checkpoint pid=196178)[0m 2026-01-26 12:09:35.230 | INFO     | __main__:evaluate_checkpoint:171 - [checkpoint-200][leetcode_train] Starting evaluation
+[36m(evaluate_checkpoint pid=196178)[0m 2026-01-26 12:09:35.231 | INFO     | __main__:evaluate_checkpoint:176 - [checkpoint-200][leetcode_train] cmd: OpenCodeEval    --model_name /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/checkpoint-200 \
+[36m(evaluate_checkpoint pid=196178)[0m                 --save_path /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/eval/checkpoint-200/leetcode_train \
+[36m(evaluate_checkpoint pid=196178)[0m                 --task LeetCode \
+[36m(evaluate_checkpoint pid=196178)[0m                 --backend vllm \
+[36m(evaluate_checkpoint pid=196178)[0m                 --split train \
+[36m(evaluate_checkpoint pid=196178)[0m                 --batch_size 2641 \
+[36m(evaluate_checkpoint pid=196178)[0m                 --temperature 0.0 \
+[36m(evaluate_checkpoint pid=196178)[0m                 --num_samples 1 \
+[36m(evaluate_checkpoint pid=196178)[0m                 --list_k 1 \
+[36m(evaluate_checkpoint pid=196178)[0m                 --num_gpus 1 \
+[36m(evaluate_checkpoint pid=196178)[0m                 --num_workers 4 \
+[36m(evaluate_checkpoint pid=196178)[0m                 --max_tokens 1024 \
+[36m(evaluate_checkpoint pid=196178)[0m                 --time_out 3 \
+[36m(evaluate_checkpoint pid=196178)[0m                 --prompt_type Instruction \
+[36m(evaluate_checkpoint pid=196178)[0m                 --model_type Chat \
+[36m(evaluate_checkpoint pid=196178)[0m                 --prompt_prefix '' \
+[36m(evaluate_checkpoint pid=196178)[0m                 --prompt_suffix '' \
+[36m(evaluate_checkpoint pid=196178)[0m                 --trust_remote_code
+[36m(evaluate_checkpoint pid=196182)[0m 2026-01-26 12:09:47.684 | INFO     | __main__:evaluate_checkpoint:183 - [checkpoint-450][leetcode_test] Completed successfully[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196182)[0m 2026-01-26 12:09:47.685 | INFO     | __main__:evaluate_checkpoint:194 - [checkpoint-450][leetcode_test] result: 12.67543859649123[32m [repeated 4x across cluster][0m
+[36m(evaluate_checkpoint pid=196182)[0m 2026-01-26 12:09:47.685 | INFO     | __main__:evaluate_checkpoint:198 - [checkpoint-450] Evaluation completed with results: {'leetcode_train': 77.6978417266187, 'leetcode_test': 12.67543859649123}[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196180)[0m 2026-01-26 12:09:38.529 | INFO     | __main__:evaluate_checkpoint:155 - [checkpoint-150] Starting evaluation with 2 benchmarks
+[36m(evaluate_checkpoint pid=196180)[0m 2026-01-26 12:09:38.529 | INFO     | __main__:eval_finish:47 - benchmark leetcode_train directory has not been created
+[36m(evaluate_checkpoint pid=196180)[0m 2026-01-26 12:09:38.529 | INFO     | __main__:evaluate_checkpoint:171 - [checkpoint-150][leetcode_train] Starting evaluation
+[36m(evaluate_checkpoint pid=196180)[0m 2026-01-26 12:09:38.529 | INFO     | __main__:evaluate_checkpoint:176 - [checkpoint-150][leetcode_train] cmd: OpenCodeEval    --model_name /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/checkpoint-150 \
+[36m(evaluate_checkpoint pid=196180)[0m                 --save_path /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/eval/checkpoint-150/leetcode_train \
+[36m(evaluate_checkpoint pid=196180)[0m                 --task LeetCode \
+[36m(evaluate_checkpoint pid=196180)[0m                 --backend vllm \
+[36m(evaluate_checkpoint pid=196180)[0m                 --split train \
+[36m(evaluate_checkpoint pid=196180)[0m                 --batch_size 2641 \
+[36m(evaluate_checkpoint pid=196180)[0m                 --temperature 0.0 \
+[36m(evaluate_checkpoint pid=196180)[0m                 --num_samples 1 \
+[36m(evaluate_checkpoint pid=196180)[0m                 --list_k 1 \
+[36m(evaluate_checkpoint pid=196180)[0m                 --num_gpus 1 \
+[36m(evaluate_checkpoint pid=196180)[0m                 --num_workers 4 \
+[36m(evaluate_checkpoint pid=196180)[0m                 --max_tokens 1024 \
+[36m(evaluate_checkpoint pid=196180)[0m                 --time_out 3 \
+[36m(evaluate_checkpoint pid=196180)[0m                 --prompt_type Instruction \
+[36m(evaluate_checkpoint pid=196180)[0m                 --model_type Chat \
+[36m(evaluate_checkpoint pid=196180)[0m                 --prompt_prefix '' \
+[36m(evaluate_checkpoint pid=196180)[0m                 --prompt_suffix '' \
+[36m(evaluate_checkpoint pid=196180)[0m                 --trust_remote_code
+[36m(evaluate_checkpoint pid=196182)[0m 2026-01-26 12:09:47.690 | INFO     | __main__:evaluate_checkpoint:155 - [checkpoint-100] Starting evaluation with 2 benchmarks
+[36m(evaluate_checkpoint pid=196182)[0m 2026-01-26 12:09:47.690 | INFO     | __main__:eval_finish:47 - benchmark leetcode_train directory has not been created
+[36m(evaluate_checkpoint pid=196182)[0m 2026-01-26 12:09:47.690 | INFO     | __main__:evaluate_checkpoint:171 - [checkpoint-100][leetcode_train] Starting evaluation
+[36m(evaluate_checkpoint pid=196182)[0m 2026-01-26 12:09:47.690 | INFO     | __main__:evaluate_checkpoint:176 - [checkpoint-100][leetcode_train] cmd: OpenCodeEval    --model_name /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/checkpoint-100 \
+[36m(evaluate_checkpoint pid=196182)[0m                 --save_path /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/eval/checkpoint-100/leetcode_train \
+[36m(evaluate_checkpoint pid=196182)[0m                 --task LeetCode \
+[36m(evaluate_checkpoint pid=196182)[0m                 --backend vllm \
+[36m(evaluate_checkpoint pid=196182)[0m                 --split train \
+[36m(evaluate_checkpoint pid=196182)[0m                 --batch_size 2641 \
+[36m(evaluate_checkpoint pid=196182)[0m                 --temperature 0.0 \
+[36m(evaluate_checkpoint pid=196182)[0m                 --num_samples 1 \
+[36m(evaluate_checkpoint pid=196182)[0m                 --list_k 1 \
+[36m(evaluate_checkpoint pid=196182)[0m                 --num_gpus 1 \
+[36m(evaluate_checkpoint pid=196182)[0m                 --num_workers 4 \
+[36m(evaluate_checkpoint pid=196182)[0m                 --max_tokens 1024 \
+[36m(evaluate_checkpoint pid=196182)[0m                 --time_out 3 \
+[36m(evaluate_checkpoint pid=196182)[0m                 --prompt_type Instruction \
+[36m(evaluate_checkpoint pid=196182)[0m                 --model_type Chat \
+[36m(evaluate_checkpoint pid=196182)[0m                 --prompt_prefix '' \
+[36m(evaluate_checkpoint pid=196182)[0m                 --prompt_suffix '' \
+[36m(evaluate_checkpoint pid=196182)[0m                 --trust_remote_code
+[36m(evaluate_checkpoint pid=196181)[0m 2026-01-26 12:09:55.097 | INFO     | __main__:evaluate_checkpoint:183 - [checkpoint-550][leetcode_test] Completed successfully
+[36m(evaluate_checkpoint pid=196181)[0m 2026-01-26 12:09:55.099 | INFO     | __main__:evaluate_checkpoint:194 - [checkpoint-550][leetcode_test] result: 12.719298245614036[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196181)[0m 2026-01-26 12:09:55.099 | INFO     | __main__:evaluate_checkpoint:198 - [checkpoint-550] Evaluation completed with results: {'leetcode_train': 78.49299507762211, 'leetcode_test': 12.719298245614036}
+[36m(evaluate_checkpoint pid=196181)[0m 2026-01-26 12:09:55.103 | INFO     | __main__:evaluate_checkpoint:155 - [checkpoint-50] Starting evaluation with 2 benchmarks
+[36m(evaluate_checkpoint pid=196181)[0m 2026-01-26 12:09:55.103 | INFO     | __main__:eval_finish:47 - benchmark leetcode_train directory has not been created
+[36m(evaluate_checkpoint pid=196181)[0m 2026-01-26 12:09:55.103 | INFO     | __main__:evaluate_checkpoint:171 - [checkpoint-50][leetcode_train] Starting evaluation
+[36m(evaluate_checkpoint pid=196181)[0m 2026-01-26 12:09:55.103 | INFO     | __main__:evaluate_checkpoint:176 - [checkpoint-50][leetcode_train] cmd: OpenCodeEval    --model_name /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/checkpoint-50 \
+[36m(evaluate_checkpoint pid=196181)[0m                 --save_path /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/eval/checkpoint-50/leetcode_train \
+[36m(evaluate_checkpoint pid=196181)[0m                 --task LeetCode \
+[36m(evaluate_checkpoint pid=196181)[0m                 --backend vllm \
+[36m(evaluate_checkpoint pid=196181)[0m                 --split train \
+[36m(evaluate_checkpoint pid=196181)[0m                 --batch_size 2641 \
+[36m(evaluate_checkpoint pid=196181)[0m                 --temperature 0.0 \
+[36m(evaluate_checkpoint pid=196181)[0m                 --num_samples 1 \
+[36m(evaluate_checkpoint pid=196181)[0m                 --list_k 1 \
+[36m(evaluate_checkpoint pid=196181)[0m                 --num_gpus 1 \
+[36m(evaluate_checkpoint pid=196181)[0m                 --num_workers 4 \
+[36m(evaluate_checkpoint pid=196181)[0m                 --max_tokens 1024 \
+[36m(evaluate_checkpoint pid=196181)[0m                 --time_out 3 \
+[36m(evaluate_checkpoint pid=196181)[0m                 --prompt_type Instruction \
+[36m(evaluate_checkpoint pid=196181)[0m                 --model_type Chat \
+[36m(evaluate_checkpoint pid=196181)[0m                 --prompt_prefix '' \
+[36m(evaluate_checkpoint pid=196181)[0m                 --prompt_suffix '' \
+[36m(evaluate_checkpoint pid=196181)[0m                 --trust_remote_code
+[36m(evaluate_checkpoint pid=196177)[0m 2026-01-26 12:09:56.797 | INFO     | __main__:evaluate_checkpoint:183 - [checkpoint-350][leetcode_test] Completed successfully
+[36m(evaluate_checkpoint pid=196177)[0m 2026-01-26 12:09:56.798 | INFO     | __main__:evaluate_checkpoint:198 - [checkpoint-350] Evaluation completed with results: {'leetcode_train': 74.3279060961757, 'leetcode_test': 12.149122807017546}
+[36m(evaluate_checkpoint pid=196179)[0m 2026-01-26 12:10:02.370 | INFO     | __main__:evaluate_checkpoint:194 - [checkpoint-500][leetcode_test] result: 13.333333333333334[32m [repeated 4x across cluster][0m
+[36m(evaluate_checkpoint pid=196179)[0m 2026-01-26 12:10:02.368 | INFO     | __main__:evaluate_checkpoint:183 - [checkpoint-500][leetcode_test] Completed successfully
+[36m(evaluate_checkpoint pid=196179)[0m 2026-01-26 12:10:02.370 | INFO     | __main__:evaluate_checkpoint:198 - [checkpoint-500] Evaluation completed with results: {'leetcode_train': 77.77357061719046, 'leetcode_test': 13.333333333333334}
+[36m(evaluate_checkpoint pid=196188)[0m 2026-01-26 12:10:15.379 | INFO     | __main__:evaluate_checkpoint:183 - [checkpoint-300][leetcode_test] Completed successfully
+[36m(evaluate_checkpoint pid=196188)[0m 2026-01-26 12:10:15.380 | INFO     | __main__:evaluate_checkpoint:198 - [checkpoint-300] Evaluation completed with results: {'leetcode_train': 73.49488829988641, 'leetcode_test': 11.228070175438596}
+[36m(evaluate_checkpoint pid=196188)[0m 2026-01-26 12:10:15.380 | INFO     | __main__:evaluate_checkpoint:194 - [checkpoint-300][leetcode_test] result: 11.228070175438596[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196183)[0m 2026-01-26 12:10:21.307 | INFO     | __main__:evaluate_checkpoint:183 - [checkpoint-250][leetcode_test] Completed successfully
+[36m(evaluate_checkpoint pid=196183)[0m 2026-01-26 12:10:21.309 | INFO     | __main__:evaluate_checkpoint:198 - [checkpoint-250] Evaluation completed with results: {'leetcode_train': 72.2074971601666, 'leetcode_test': 10.0}
+[36m(evaluate_checkpoint pid=196183)[0m 2026-01-26 12:10:21.309 | INFO     | __main__:evaluate_checkpoint:194 - [checkpoint-250][leetcode_test] result: 10.0[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196178)[0m 2026-01-26 12:17:54.556 | INFO     | __main__:evaluate_checkpoint:183 - [checkpoint-200][leetcode_train] Completed successfully
+[36m(evaluate_checkpoint pid=196178)[0m 2026-01-26 12:17:54.557 | INFO     | __main__:eval_finish:47 - benchmark leetcode_test directory has not been created
+[36m(evaluate_checkpoint pid=196178)[0m 2026-01-26 12:17:54.557 | INFO     | __main__:evaluate_checkpoint:171 - [checkpoint-200][leetcode_test] Starting evaluation
+[36m(evaluate_checkpoint pid=196178)[0m 2026-01-26 12:17:54.557 | INFO     | __main__:evaluate_checkpoint:176 - [checkpoint-200][leetcode_test] cmd: OpenCodeEval    --model_name /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/checkpoint-200 \
+[36m(evaluate_checkpoint pid=196178)[0m                 --save_path /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/eval/checkpoint-200/leetcode_test \
+[36m(evaluate_checkpoint pid=196178)[0m                 --task LeetCode \
+[36m(evaluate_checkpoint pid=196178)[0m                 --backend vllm \
+[36m(evaluate_checkpoint pid=196178)[0m                 --split test \
+[36m(evaluate_checkpoint pid=196178)[0m                 --batch_size 2280 \
+[36m(evaluate_checkpoint pid=196178)[0m                 --temperature 1.0 \
+[36m(evaluate_checkpoint pid=196178)[0m                 --num_samples 10 \
+[36m(evaluate_checkpoint pid=196178)[0m                 --list_k 1,2,3,4,5,6,7,8,9,10 \
+[36m(evaluate_checkpoint pid=196178)[0m                 --num_gpus 1 \
+[36m(evaluate_checkpoint pid=196178)[0m                 --num_workers 4 \
+[36m(evaluate_checkpoint pid=196178)[0m                 --max_tokens 1024 \
+[36m(evaluate_checkpoint pid=196178)[0m                 --time_out 3 \
+[36m(evaluate_checkpoint pid=196178)[0m                 --prompt_type Instruction \
+[36m(evaluate_checkpoint pid=196178)[0m                 --model_type Chat \
+[36m(evaluate_checkpoint pid=196178)[0m                 --prompt_prefix '' \
+[36m(evaluate_checkpoint pid=196178)[0m                 --prompt_suffix '' \
+[36m(evaluate_checkpoint pid=196178)[0m                 --trust_remote_code
+[36m(evaluate_checkpoint pid=196182)[0m 2026-01-26 12:18:26.643 | INFO     | __main__:evaluate_checkpoint:183 - [checkpoint-100][leetcode_train] Completed successfully[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196182)[0m 2026-01-26 12:18:26.644 | INFO     | __main__:eval_finish:47 - benchmark leetcode_test directory has not been created[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196182)[0m 2026-01-26 12:18:26.644 | INFO     | __main__:evaluate_checkpoint:171 - [checkpoint-100][leetcode_test] Starting evaluation[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196182)[0m 2026-01-26 12:18:26.644 | INFO     | __main__:evaluate_checkpoint:176 - [checkpoint-100][leetcode_test] cmd: OpenCodeEval    --model_name /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/checkpoint-100 \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196182)[0m                 --save_path /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/eval/checkpoint-100/leetcode_test \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196182)[0m                 --task LeetCode \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196182)[0m                 --backend vllm \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196182)[0m                 --split test \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196182)[0m                 --batch_size 2280 \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196182)[0m                 --temperature 1.0 \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196182)[0m                 --num_samples 10 \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196182)[0m                 --list_k 1,2,3,4,5,6,7,8,9,10 \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196182)[0m                 --num_gpus 1 \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196182)[0m                 --num_workers 4 \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196182)[0m                 --max_tokens 1024 \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196182)[0m                 --time_out 3 \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196182)[0m                 --prompt_type Instruction \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196182)[0m                 --model_type Chat \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196182)[0m                 --prompt_prefix '' \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196182)[0m                 --prompt_suffix '' \[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196182)[0m                 --trust_remote_code[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196178)[0m 2026-01-26 12:24:04.371 | INFO     | __main__:evaluate_checkpoint:194 - [checkpoint-200][leetcode_train] result: 67.09579704657327
+[36m(evaluate_checkpoint pid=196178)[0m 2026-01-26 12:24:04.371 | INFO     | __main__:evaluate_checkpoint:194 - [checkpoint-200][leetcode_test] result: 8.903508771929825
+[36m(evaluate_checkpoint pid=196178)[0m 2026-01-26 12:24:04.371 | INFO     | __main__:evaluate_checkpoint:198 - [checkpoint-200] Evaluation completed with results: {'leetcode_train': 67.09579704657327, 'leetcode_test': 8.903508771929825}
+[36m(evaluate_checkpoint pid=196178)[0m 2026-01-26 12:24:04.370 | INFO     | __main__:evaluate_checkpoint:183 - [checkpoint-200][leetcode_test] Completed successfully[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196181)[0m 2026-01-26 12:18:28.949 | INFO     | __main__:eval_finish:47 - benchmark leetcode_test directory has not been created
+[36m(evaluate_checkpoint pid=196181)[0m 2026-01-26 12:18:28.949 | INFO     | __main__:evaluate_checkpoint:171 - [checkpoint-50][leetcode_test] Starting evaluation
+[36m(evaluate_checkpoint pid=196181)[0m 2026-01-26 12:18:28.949 | INFO     | __main__:evaluate_checkpoint:176 - [checkpoint-50][leetcode_test] cmd: OpenCodeEval    --model_name /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/checkpoint-50 \
+[36m(evaluate_checkpoint pid=196181)[0m                 --save_path /volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity/eval/checkpoint-50/leetcode_test \
+[36m(evaluate_checkpoint pid=196181)[0m                 --task LeetCode \
+[36m(evaluate_checkpoint pid=196181)[0m                 --backend vllm \
+[36m(evaluate_checkpoint pid=196181)[0m                 --split test \
+[36m(evaluate_checkpoint pid=196181)[0m                 --batch_size 2280 \
+[36m(evaluate_checkpoint pid=196181)[0m                 --temperature 1.0 \
+[36m(evaluate_checkpoint pid=196181)[0m                 --num_samples 10 \
+[36m(evaluate_checkpoint pid=196181)[0m                 --list_k 1,2,3,4,5,6,7,8,9,10 \
+[36m(evaluate_checkpoint pid=196181)[0m                 --num_gpus 1 \
+[36m(evaluate_checkpoint pid=196181)[0m                 --num_workers 4 \
+[36m(evaluate_checkpoint pid=196181)[0m                 --max_tokens 1024 \
+[36m(evaluate_checkpoint pid=196181)[0m                 --time_out 3 \
+[36m(evaluate_checkpoint pid=196181)[0m                 --prompt_type Instruction \
+[36m(evaluate_checkpoint pid=196181)[0m                 --model_type Chat \
+[36m(evaluate_checkpoint pid=196181)[0m                 --prompt_prefix '' \
+[36m(evaluate_checkpoint pid=196181)[0m                 --prompt_suffix '' \
+[36m(evaluate_checkpoint pid=196181)[0m                 --trust_remote_code
+[36m(evaluate_checkpoint pid=196180)[0m 2026-01-26 12:24:53.416 | INFO     | __main__:evaluate_checkpoint:194 - [checkpoint-150][leetcode_test] result: 7.192982456140349[32m [repeated 2x across cluster][0m
+[36m(evaluate_checkpoint pid=196180)[0m 2026-01-26 12:24:53.416 | INFO     | __main__:evaluate_checkpoint:198 - [checkpoint-150] Evaluation completed with results: {'leetcode_train': 65.20257478227944, 'leetcode_test': 7.192982456140349}
+[36m(evaluate_checkpoint pid=196180)[0m 2026-01-26 12:24:53.414 | INFO     | __main__:evaluate_checkpoint:183 - [checkpoint-150][leetcode_test] Completed successfully
+[36m(evaluate_checkpoint pid=196182)[0m 2026-01-26 12:25:31.729 | INFO     | __main__:evaluate_checkpoint:183 - [checkpoint-100][leetcode_test] Completed successfully
+[36m(evaluate_checkpoint pid=196182)[0m 2026-01-26 12:25:31.731 | INFO     | __main__:evaluate_checkpoint:198 - [checkpoint-100] Evaluation completed with results: {'leetcode_train': 66.64142370314275, 'leetcode_test': 9.078947368421051}
+[36m(evaluate_checkpoint pid=196182)[0m 2026-01-26 12:25:31.731 | INFO     | __main__:evaluate_checkpoint:194 - [checkpoint-100][leetcode_test] result: 9.078947368421051[32m [repeated 2x across cluster][0m
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:268 - [checkpoint-600] Final results: {'leetcode_train': 78.45513063233624, 'leetcode_test': 12.412280701754385}
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:268 - [checkpoint-550] Final results: {'leetcode_train': 78.49299507762211, 'leetcode_test': 12.719298245614036}
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:268 - [checkpoint-500] Final results: {'leetcode_train': 77.77357061719046, 'leetcode_test': 13.333333333333334}
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:268 - [checkpoint-450] Final results: {'leetcode_train': 77.6978417266187, 'leetcode_test': 12.67543859649123}
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:268 - [checkpoint-400] Final results: {'leetcode_train': 76.37258614161303, 'leetcode_test': 11.18421052631579}
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:268 - [checkpoint-350] Final results: {'leetcode_train': 74.3279060961757, 'leetcode_test': 12.149122807017546}
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:268 - [checkpoint-300] Final results: {'leetcode_train': 73.49488829988641, 'leetcode_test': 11.228070175438596}
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:268 - [checkpoint-250] Final results: {'leetcode_train': 72.2074971601666, 'leetcode_test': 10.0}
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:268 - [checkpoint-200] Final results: {'leetcode_train': 67.09579704657327, 'leetcode_test': 8.903508771929825}
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:268 - [checkpoint-150] Final results: {'leetcode_train': 65.20257478227944, 'leetcode_test': 7.192982456140349}
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:268 - [checkpoint-100] Final results: {'leetcode_train': 66.64142370314275, 'leetcode_test': 9.078947368421051}
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:268 - [checkpoint-50] Final results: {'leetcode_train': 62.85497917455509, 'leetcode_test': 8.508771929824563}
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:271 - ================================================================================
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:272 - EVALUATION SUMMARY
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:273 - ================================================================================
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:275 - checkpoint-600:
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:277 -   leetcode_train: 78.46
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:277 -   leetcode_test: 12.41
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:275 - checkpoint-550:
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:277 -   leetcode_train: 78.49
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:277 -   leetcode_test: 12.72
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:275 - checkpoint-500:
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:277 -   leetcode_train: 77.77
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:277 -   leetcode_test: 13.33
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:275 - checkpoint-450:
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:277 -   leetcode_train: 77.70
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:277 -   leetcode_test: 12.68
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:275 - checkpoint-400:
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:277 -   leetcode_train: 76.37
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:277 -   leetcode_test: 11.18
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:275 - checkpoint-350:
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:277 -   leetcode_train: 74.33
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:277 -   leetcode_test: 12.15
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:275 - checkpoint-300:
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:277 -   leetcode_train: 73.49
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:277 -   leetcode_test: 11.23
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:275 - checkpoint-250:
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:277 -   leetcode_train: 72.21
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:277 -   leetcode_test: 10.00
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:275 - checkpoint-200:
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:277 -   leetcode_train: 67.10
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:277 -   leetcode_test: 8.90
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:275 - checkpoint-150:
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:277 -   leetcode_train: 65.20
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:277 -   leetcode_test: 7.19
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:275 - checkpoint-100:
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:277 -   leetcode_train: 66.64
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:277 -   leetcode_test: 9.08
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:275 - checkpoint-50:
+2026-01-26 12:31:46.531 | INFO     | __main__:parallel_evaluate:277 -   leetcode_train: 62.85
+2026-01-26 12:31:46.532 | INFO     | __main__:parallel_evaluate:277 -   leetcode_test: 8.51
+2026-01-26 12:31:46.532 | INFO     | __main__:parallel_evaluate:278 - ================================================================================
+2026-01-26 12:31:46.532 | INFO     | __main__:<module>:343 - Parallel evaluation completed successfully
+[36m(evaluate_checkpoint pid=196181)[0m 2026-01-26 12:31:46.520 | INFO     | __main__:evaluate_checkpoint:183 - [checkpoint-50][leetcode_test] Completed successfully
+[36m(evaluate_checkpoint pid=196181)[0m 2026-01-26 12:31:46.521 | INFO     | __main__:evaluate_checkpoint:198 - [checkpoint-50] Evaluation completed with results: {'leetcode_train': 62.85497917455509, 'leetcode_test': 8.508771929824563}
+[36m(evaluate_checkpoint pid=196181)[0m 2026-01-26 12:31:46.521 | INFO     | __main__:evaluate_checkpoint:194 - [checkpoint-50][leetcode_test] result: 8.508771929824563[32m [repeated 2x across cluster][0m
