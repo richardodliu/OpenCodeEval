@@ -6,10 +6,10 @@ cd /volume/pt-train/users/rbliu/github/OpenCodeEval/agent
 source /volume/pt-train/users/rbliu/miniconda3/bin/activate openrlhf
 
 # 配置参数
-CHECKPOINT_DIR="/volume/pt-train/users/rbliu/checkpoint/leetcode/Qwen2.5-32B/cosine_diversity"  # 修改为你的checkpoint目录
-CONFIG_PATH="config/leetcode.json"           # benchmark配置文件
+CHECKPOINT_DIR="/volume/pt-train/users/rbliu/rbliu/jd/checkpoint/Qwen2.5-Coder-3B-Instruct/jd_dataset/epoch-1_batch-256_lr-1e-6"  # 修改为你的checkpoint目录
+CONFIG_PATH="config/humaneval.json"           # benchmark配置文件
 NUM_GPUS=1                                   # 每个checkpoint使用的GPU数
-NUM_WORKERS=4                                # 每个checkpoint使用的CPU worker数
+NUM_WORKERS=8                                # 每个checkpoint使用的CPU worker数
 MAX_PARALLEL=8                               # 最大并行任务数（可选）
 
 # 示例1: 基本用法（自动计算并行数）
@@ -18,7 +18,7 @@ python parallel_eval.py \
     --config_path "${CONFIG_PATH}" \
     --num_gpus ${NUM_GPUS} \
     --num_workers ${NUM_WORKERS} \
-    2>&1 | tee "/volume/pt-train/users/rbliu/github/OpenCodeEval/agent/parallel_eval.log"
+    2>&1 | tee "/volume/pt-train/users/rbliu/jd/logs/parallel_eval.log"
 
 # 示例2: 指定最大并行数
 # python parallel_eval.py \

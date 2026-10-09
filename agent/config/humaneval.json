@@ -1,0 +1,17 @@
+{
+    "humaneval_base" : {
+        "task": "HumanEval",
+        "split": "base",
+        "backend": "vllm",
+        "batch_size": 164,
+        "temperature": 0.0,
+        "num_samples": 1,
+        "list_k": "1",
+        "max_tokens": 1024,
+        "time_out": 3,
+        "prompt_type": "Completion",
+        "model_type": "Chat",
+        "prompt_prefix": "Please provide a self-contained Python script that solves the following problem in a markdown code block:\n```python\n",
+        "prompt_suffix": "\n```\n"
+    }
+}

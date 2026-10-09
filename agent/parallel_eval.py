@@ -144,7 +144,7 @@ def evaluate_checkpoint(
     parent_dir = os.path.dirname(ckpt_path)
     eval_dir = os.path.join(parent_dir, 'eval')
     if not os.path.exists(eval_dir):
-        os.makedirs(eval_dir)
+        os.makedirs(eval_dir, exist_ok=True)
 
     save_path = os.path.join(eval_dir, ckpt_name)
     if not os.path.exists(save_path):
